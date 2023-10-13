@@ -20,7 +20,14 @@ export default function RootLayout({ children }) {
     console.log(fullUrl);
     return (<div className='flex flex-col w-full h-full'>
         <Header path={fullUrl}></Header>
-        {children}
+        <div className='w-screen'
+            style={{
+                // height is 100% - 64px (header height)
+                maxHeight: 'calc(100vh - 64px)'
+        }}    
+        >
+            {children}
+        </div>
         <Toaster
             position='top-center'
         ></Toaster>

@@ -26,12 +26,8 @@ export async function GET(req) {
                 headers: { "Content-Type": "text/plain" },
             });
         }
-
-        const result = await db
-            .collection("leaderboard")
-            .find({})
-            .sort({ points: -1 })
-            .toArray();
+        let currentMonth = new Date().toISOString().slice(0, 7);
+        let result = await db.collection("leaderboard").findOne({ hostname: hostname, month: currentMonth });
         return new Response(JSON.stringify(result), {
             headers: { "Content-Type": "application/json" },
         });
