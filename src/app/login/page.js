@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 function Login(params) {
@@ -7,13 +7,15 @@ function Login(params) {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
 
-    // try to get user data from localstorage
-    let user = localStorage.getItem("taiga_user")
-    if (user) {
-        user = JSON.parse(user)
-        // redirect to dashboard
-        document.location = "/dashboard"
-    }
+    useEffect(() => {
+        // try to get user data from localstorage
+        let user = localStorage.getItem("taiga_user")
+        if (user) {
+            user = JSON.parse(user)
+            // redirect to dashboard
+            document.location = "/dashboard"
+        }
+    }, [])
 
     function handleLogin(e) {
         e.preventDefault()
