@@ -1,6 +1,8 @@
 'use client';
-const Header = ({ path }) => {
 
+import { usePathname } from "next/navigation";
+const Header = (params) => {
+    const path = usePathname();
     const menus = [
         {
             name: "Leaderboard",
@@ -11,7 +13,7 @@ const Header = ({ path }) => {
             icon: UserIcon,
         },
         {
-            name: "Folder",
+            name: "Project",
             icon: FolderIcon,
         }
     ]
