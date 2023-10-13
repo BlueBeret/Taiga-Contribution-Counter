@@ -7,6 +7,9 @@ import Header from './Header';
 export const metadata = {
     title: 'Taiga Point Counter',
     description: 'Calculate your contributions to Taiga projects',
+    icons: {
+        icon: '/favicon.ico',
+    }
 }
 
 export default function RootLayout({ children }) {
