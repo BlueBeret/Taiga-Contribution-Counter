@@ -1,5 +1,5 @@
 import clientPromise from "@/lib/mongoclient";
-
+export const dynamic = 'force-dynamic'
 export async function GET(req) {
     try {
         const client = await clientPromise;

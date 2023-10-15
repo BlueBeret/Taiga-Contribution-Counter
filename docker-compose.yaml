@@ -1,0 +1,5 @@
+services:
+  taiga-point-counter:
+    build: .
+    ports:
+      - "3001:3001"

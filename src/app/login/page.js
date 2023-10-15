@@ -22,13 +22,13 @@ function Login(params) {
         // check if hostname is like http://domainorip:port
         // check if username is not empty
         // check if password is not empty
-        const urlPattern = /^(http:\/\/)([^:\/]+)(:\d+)?(\/.*)?$/;
+        const urlPattern = /^(https?:\/\/)([^:\/]+)(:\d+)?(\/.*)?$/;
         let isHostnameValid = urlPattern.test(hostname)
         let isUsernameValid = username.length > 0
         let isPasswordValid = password.length > 0
 
         if (!isHostnameValid) {
-            toast.error("Hostname doesn't match this format http://domainorip:port")
+            toast.error("Hostname doesn't match this format https://domainorip:port")
             return
         }
         if (!isUsernameValid || !isPasswordValid) {
@@ -44,6 +44,7 @@ function Login(params) {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
+                mode:"cors",
                 method: "POST",
                 body: JSON.stringify({
                     type: "normal",
