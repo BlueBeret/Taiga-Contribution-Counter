@@ -1,9 +1,9 @@
 
 import clientPromise from "@/lib/mongoclient";
 
-const USERNAME = process.env.USERNAME;
-const PASSWORD = process.env.PASSWORD;
-const HOSTNAME = process.env.HOSTNAME;
+const USERNAME = process.env.TAIGA_USERNAME;
+const PASSWORD = process.env.TAIGA_PASSWORD;
+const HOSTNAME = process.env.TAIGA_HOSTNAME;
 
 
 export async function GET(req) {

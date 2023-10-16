@@ -16,7 +16,7 @@ export async function GET(req) {
             });
         }
 
-        if (hostname != process.env.HOSTNAME) {
+        if (hostname != process.env.TAIGA_HOSTNAME) {
             return new Response("Sorry, we currently support our internal taiga. Please open an issue or pull request if you need this feature", {
                 status: 400,
                 headers: { "Content-Type": "text/plain" },
