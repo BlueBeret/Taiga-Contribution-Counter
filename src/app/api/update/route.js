@@ -24,7 +24,8 @@ export async function GET(req) {
         const contribution = await db.collection("leaderboard").findOne({ hostname: hostname, month: new Date().toISOString().slice(0, 7) });
         let currentTimeInUTC7 = new Date()
         currentTimeInUTC7.setHours(currentTimeInUTC7.getHours() + 7)
-        if (contribution && new Date(contribution.lastUpdated) > currentTimeInUTC7.setHours(currentTimeInUTC7.getHours() - 1)) {
+        let isdevelop = true
+        if (!isdevelop && contribution && new Date(contribution.lastUpdated) > currentTimeInUTC7.setHours(currentTimeInUTC7.getHours() - 1)) {
             return new Response("Please wait for 1 hour before refreshing", {
                 status: 403,
                 headers: { "Content-Type": "text/plain" },
@@ -47,25 +48,51 @@ export async function GET(req) {
             }),
         });
 
-        const loginResult = await login.json();
+        var loginResult = await login.json();
 
-        // get all projects
-        const projects = await fetch(`${hostname}/api/v1/projects`, {
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${loginResult.auth_token}`,
-            },
-        });
-
-        const projectsResult = await projects.json();
-
-        // get all users
+        let url_nextpage = ""
         var users = await fetch(`${hostname}/api/v1/users`, {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${loginResult.auth_token}`,
             },
-        }).then((res) => res.json());
+        }).then((res) => {
+            url_nextpage = res.headers.get("x-pagination-next")
+            return res.json()
+        });
+        while (url_nextpage) {
+            // refresh token
+            const login = await fetch(`${hostname}/api/v1/auth/refresh`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    refresh: loginResult.refresh,
+                }),
+            });
+
+            loginResult = await login.json();
+
+            // get all users
+            var users_nextpage = await fetch(url_nextpage, {
+                headers: {
+                    Authorization: `Bearer ${loginResult.auth_token}`
+                },
+            }).then((res) => {
+                url_nextpage = res.headers.get("x-pagination-next")
+                return res.json()
+            });
+            users = users.concat(users_nextpage)
+        }
+
+
+        // remove duplicate users
+        users = users.filter((user, index, self) =>
+            index === self.findIndex((t) => (
+                t.id === user.id
+            ))
+        )
 
         users = users.map(user => {
             return {
@@ -78,6 +105,35 @@ export async function GET(req) {
                 image: user.photo
             }
         })
+
+        console.log("users: ", users.length)
+
+
+        // get all projects
+        const projects = await fetch(`${hostname}/api/v1/projects`, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${loginResult.auth_token}`,
+            },
+        });
+
+        const projectsResult = await projects.json();
+
+        // refresh token
+        let refresh_login = await fetch(`${hostname}/api/v1/auth/refresh`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                refresh: loginResult.refresh,
+            }),
+        });
+
+        loginResult = await refresh_login.json();
+
+        console.log("projects: ", projectsResult.length)
+
         let host = hostname
         let month = currentMonth
         let user = loginResult
