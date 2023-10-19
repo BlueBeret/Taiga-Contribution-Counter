@@ -5,6 +5,8 @@ const USERNAME = process.env.TAIGA_USERNAME;
 const PASSWORD = process.env.TAIGA_PASSWORD;
 const HOSTNAME = process.env.TAIGA_HOSTNAME;
 
+export const dynamic = "force-dynamic"
+
 
 export async function GET(req) {
     try {
