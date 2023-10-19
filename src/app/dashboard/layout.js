@@ -22,8 +22,7 @@ export default function RootLayout({ children }) {
         <Header path={fullUrl}></Header>
         <div className='w-screen'
             style={{
-                // height is 100% - 64px (header height)
-                maxHeight: 'calc(100vh - 64px)'
+                height: "calc(100vh - 68px)"
         }}    
         >
             {children}

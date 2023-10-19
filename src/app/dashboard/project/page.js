@@ -17,6 +17,7 @@ export default function Dashboard() {
         const toastLoading = toast.loading("Checking if you're still handsome")
         let host = new URL(user.photo)
         host = host.origin
+        console.log(user)
         fetch(host + "/api/v1/users/me", {
             headers: {
                 "Authorization": `Bearer ${user.auth_token}`

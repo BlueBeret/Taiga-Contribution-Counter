@@ -58,8 +58,8 @@ export default function Leaderboard() {
                 setLeaderboard(data);
             });
     }, [user]);
-    return <div className="w-full max-h-[900px] p-8 flex gap-8 items-start overflow-clip">
-        <div className="rank-cards-container no-scroll w-[550px] max-h-[900px] flex flex-col overflow-auto gap-4">
+    return <div className="w-full h-full p-8 flex gap-8 items-start overflow-clip">
+        <div className="rank-cards-container no-scroll w-1/3 h-[100%] flex flex-col overflow-auto gap-4">
             <div className="flex flex-col gap-0">
                 <span className="text-pink-0">
                     {thisMonthName} {thisYear} Nyan Nyan warrios
@@ -72,23 +72,20 @@ export default function Leaderboard() {
                 let rank = index + 1
                 // point 2 decimal places
                 let point = user.point.toFixed(2)
-                return <div key={index} className={`w-[500px] relative border flex items-center px-8 py-[18px] gap-4 ${rank > 3 ? "border-orange-0" : "border-yellow-0"}`}>
+                return <div key={index} className={`w-full max-w-[500px] relative border flex items-center px-8 py-[18px] gap-4 ${rank > 3 ? "border-orange-0" : "border-yellow-0"}`}>
                     <img src={user.image} height={40} width={40} className="rounded-full"></img>
-                    <span className="w-[120px]">{user.name}</span>
-                    <div className="flex ml-auto ">
-                        <div className="flex flex-col px-4">
+                    <span className="w-1/4 break-words">{user.username}</span>
+                    <div className="flex w-full justify-end">
+                        <div className="flex flex-col 2xl:px-4">
                             <span className="text-[12px]">Point</span>
                             <span className="text-[32px] leading-[48px]">{point}</span>
                         </div>
-                        <div className="w-[2px] mx-4 bg-[#666666]">
+                        <div className="w-[2px] xl:mx-2 2xl:mx-4 bg-[#666666]">
                             {/* this is separator */}
                         </div>
                         <div className="flex flex-col px-4 justify-center h-full">
-                            {rank <= 3 ? "" : <span className="text-[12px]">Rank</span>}
-                            {
-                                rank <= 3 ? <img src={`/${rank}.png`} height={60 - (rank * 5)} width={60 - (rank * 5)}></img> :
-                                    <span className="text-[32px] leading-[48px]">#{rank}</span>
-                            }
+                            <span className="text-[12px]">Rank</span>
+                            <span className="text-[32px] leading-[48px]">#{rank}</span>
                         </div>
                     </div>
                 </div>
@@ -103,27 +100,27 @@ const Graph = ({ users }) => {
 
     const maxPoint = users[0].point
 
-    return <div className="flex flex-col items-center justify-center overflow-hidden">
+    return <div className="flex flex-col items-center justify-center overflow-hidden w-2/3 h-full">
         <h1 className="text-pink-0 text-[32px] leading-[48px]">Cat'O Meter</h1>
         <div className="flex items-end h-full w-full gap-4">
-        {users.map((user, index) => {
-            let percent = user.point / maxPoint * 700
-            // set to int
-            percent = Math.floor(percent)
+            {users.map((user, index) => {
+                let percent = user.point / maxPoint * 700
+                // set to int
+                percent = Math.floor(percent)
 
-            let point = user.point.toFixed(2)
-            return <div key={index}>
-                <span>{point}</span>
-                <div  className={`w-[60px] bg-white`} style={
-                    {
-                        height: percent,
-                        backgroundImage: `url(${user.image})`,
-                        backgroundRepeat: "repeat-y"
-                    }
-                } >
+                let point = user.point.toFixed(2)
+                return <div key={index}>
+                    <span>{point}</span>
+                    <div className={`w-[60px] bg-white`} style={
+                        {
+                            height: percent,
+                            backgroundImage: `url(${user.image})`,
+                            backgroundRepeat: "repeat-y"
+                        }
+                    } >
+                    </div>
                 </div>
-            </div>
-        })}
-    </div>
+            })}
+        </div>
     </div>
 }
