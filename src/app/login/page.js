@@ -94,15 +94,15 @@ function Login(params) {
                 <form onSubmit={handleLogin} className="flex flex-col gap-4">
                     <div className="flex items-center gap-1 border border-purple-0 bg-purple-50 px-2 py-[10px] rounded-[4px]">
                         {HostIcon}
-                        <input name="hostname" className="bg-transparent" placeholder="Hostname" title="example: http://10.10.10.1:9000" type="text" value={hostname} onChange={e => setHostname(e.target.value)}></input>
+                        <input name="hostname" className="bg-transparent w-full" placeholder="Hostname" title="example: http://10.10.10.1:9000" type="text" value={hostname} onChange={e => setHostname(e.target.value)}></input>
                     </div>
                     <div name="username" className="flex items-center gap-1 border border-purple-0 bg-purple-50 px-2 py-[10px] rounded-[4px]">
                         {UserIcon}
-                        <input className="bg-transparent" placeholder="Username" type="text" value={username} onChange={e => setUsername(e.target.value)}></input>
+                        <input className="bg-transparent w-full" placeholder="Username" type="text" value={username} onChange={e => setUsername(e.target.value)}></input>
                     </div>
                     <div name="password" className="flex items-center gap-1 border border-purple-0 bg-purple-50 px-2 py-[10px] rounded-[4px]">
                         {PasswordIcon}
-                        <input className="bg-transparent" placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)}></input>
+                        <input className="bg-transparent w-full" placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)}></input>
                     </div>
                     <input type="submit" hidden />
                 </form>

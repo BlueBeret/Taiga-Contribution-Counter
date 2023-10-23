@@ -1,46 +1,17 @@
 "use client";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
+import { useCheckUser } from "@/hooks/authHooks";
 
 export default function Dashboard() {
+    const user = useCheckUser();
     useEffect(() => {
-        let user = localStorage.getItem("taiga_user")
-        if (!user) {
-            // redirect to login
-            document.location = "/login"
+        if (user) {
+            document.location = "/dashboard/user"
+        } else {
+            toast.loading("Loading")
         }
-        // check if token is valid
-        user = JSON.parse(user)
-        const toastLoading = toast.loading("Checking if you're still handsome")
-        let host = new URL(user.photo)
-        host = host.origin
-        fetch(host + "/api/v1/users/me", {
-            headers: {
-                "Authorization": `Bearer ${user.auth_token}`
-            },
-            method: "GET",
-        }).then(resp => resp.json().then(data => {
-            if (data.detail == "Invalid token") {
-                localStorage.removeItem("taiga_user")
-                toast.error("Your token is invalid, please login again", {
-                    id: toastLoading
-                })
-                // redirect to login
-                document.location = "/login"
-            } else {
-                toast.remove(toastLoading)
-            }
-        }).catch(err => {
-            localStorage.removeItem("taiga_user")
-            toast.error("Your handsomeness has worn out", {
-                id: toastLoading
-            })
-            // redirect to login
-            document.location = "/login"
-        }))
-    }, [])
-
-    return <main>
-        {document.location = "/dashboard/user"}
+    }, [user])
+    return <main> 
     </main>
 }

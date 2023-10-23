@@ -2,50 +2,11 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import LOADINGMESSAGE from "./loadingmessage"
+import { useCheckUser } from "@/hooks/authHooks";
 
 export default function Dashboard() {
-    const [user, setUser] = useState(null)
+    const user = useCheckUser()
     const [contributions, setContributions] = useState()
-    useEffect(() => {
-        let user = localStorage.getItem("taiga_user")
-        if (!user) {
-            // redirect to login
-            document.location = "/login"
-        }
-        // check if token is valid
-        user = JSON.parse(user)
-        const toastLoading = toast.loading("Checking if you're still handsome")
-        let host = new URL(user.photo)
-        host = host.origin
-        console.log(user)
-        fetch(host + "/api/v1/users/me", {
-            headers: {
-                "Authorization": `Bearer ${user.auth_token}`
-            },
-            method: "GET",
-        }).then(resp => resp.json().then(data => {
-            if (data.detail == "Invalid token") {
-                localStorage.removeItem("taiga_user")
-                toast.error("Your token is invalid, please login again", {
-                    id: toastLoading
-                })
-                // redirect to login
-                document.location = "/login"
-            }
-            else {
-                toast.remove(toastLoading)
-                setUser(user)
-            }
-        }).catch(err => {
-            localStorage.removeItem("taiga_user")
-            toast.error("Your handsomeness has worn out", {
-                id: toastLoading
-            })
-            // redirect to login
-            document.location = "/login"
-        }))
-    }, [])
-
     const calculateAllUsersPoints = async (projects, month) => {
         // month is year-mm
         if (projects.length == 0) {
