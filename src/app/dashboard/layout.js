@@ -23,7 +23,7 @@ export default function RootLayout({ children }) {
         <div className='w-screen'
             style={{
                 height: "calc(100vh - 68px)"
-        }}    
+            }}
         >
             {children}
         </div>

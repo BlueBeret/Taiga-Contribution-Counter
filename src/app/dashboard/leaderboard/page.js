@@ -104,12 +104,13 @@ const Graph = ({ users }) => {
         <h1 className="text-pink-0 text-[32px] leading-[48px]">Cat'O Meter</h1>
         <div className="flex items-end h-full w-full gap-4">
             {users.map((user, index) => {
-                let percent = user.point / maxPoint * 700
+                let percent = user.point / maxPoint * 100
                 // set to int
                 percent = Math.floor(percent)
+                percent = percent + "%"
 
                 let point = user.point.toFixed(2)
-                return <div key={index}>
+                return <div key={index} style={{height: "100%", display:"flex", justifyContent:"end", flexDirection:"column"}}>
                     <span>{point}</span>
                     <div className={`w-[60px] bg-white`} style={
                         {
