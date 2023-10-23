@@ -44,7 +44,7 @@ function Login(params) {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
-                mode:"cors",
+                mode: "cors",
                 method: "POST",
                 body: JSON.stringify({
                     type: "normal",
@@ -61,7 +61,7 @@ function Login(params) {
                 // save data to localstorage
                 localStorage.setItem("taiga_user", JSON.stringify(data))
                 toast.success("Hi " + data.username + ", have a great day!", {
-                    id:toastLoading
+                    id: toastLoading
                 })
                 // redirect to dashboard
                 document.location = "/dashboard"
@@ -91,7 +91,7 @@ function Login(params) {
                     <h1 className=" text-pink-0 text-[32px] leading-[48px]">Welcome!</h1>
                     <h2 className=" text-[20px] leading-[30px]">Sign in to your Taiga account</h2>
                 </div>
-                <div className="flex flex-col gap-4">
+                <form onSubmit={handleLogin} className="flex flex-col gap-4">
                     <div className="flex items-center gap-1 border border-purple-0 bg-purple-50 px-2 py-[10px] rounded-[4px]">
                         {HostIcon}
                         <input name="hostname" className="bg-transparent" placeholder="Hostname" title="example: http://10.10.10.1:9000" type="text" value={hostname} onChange={e => setHostname(e.target.value)}></input>
@@ -104,7 +104,8 @@ function Login(params) {
                         {PasswordIcon}
                         <input className="bg-transparent" placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)}></input>
                     </div>
-                </div>
+                    <input type="submit" hidden />
+                </form>
 
                 <div className="flex w-full">
                     <button className="w-full bg-pink-0 text-purple-100 rounded-[4px] py-2" onClick={handleLogin}>Login</button>
