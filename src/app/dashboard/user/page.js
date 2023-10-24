@@ -112,7 +112,7 @@ export default function Dashboard() {
             </div>
         </div>
         <UserInput user={user} calculatePoint={calculatePoint} />
-        <ContributionsSummary contributions={contributions}/>
+        <ContributionsSummary contributions={contributions} />
     </main>
 }
 
@@ -141,7 +141,7 @@ const ContributionsSummary = ({ contributions, setCurrentPoint, currentPoint }) 
                                 <td className="py-[18px] px-8 text-left">{first_project ? project.name : ""}</td>
                                 <td className="py-[18px] px-8 text-left">{first_milestone ? milestone.name : ""}</td>
                                 <td className="py-[18px] px-8 text-left">{user_stories.name}</td>
-                                <td className="py-[18px] px-8 text-left">{user_stories.status == "Done"? <DoneBadge/> : <OnGoingBadge/>}</td>
+                                <td className="py-[18px] px-8 text-left">{user_stories.status == "Done" ? <DoneBadge /> : <OnGoingBadge />}</td>
                                 <td className="py-[18px] px-8 text-left">{user_stories.mypoint}</td>
                             </tr>
                             first_project = false
@@ -201,6 +201,11 @@ const UserInput = ({ user, calculatePoint }) => {
             },
         }).then(resp => resp.json().then(data => {
             data = data.filter(project => project.i_am_member)
+            data = data.sort((a, b) => {
+                let date_a = Date.parse(a.created_date)
+                let date_b = Date.parse(b.created_date)
+                return date_b - date_a
+            })
             setAvailableProjects(data)
         }))
     }, [user])

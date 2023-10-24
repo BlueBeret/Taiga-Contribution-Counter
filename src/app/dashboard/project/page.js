@@ -173,6 +173,11 @@ const UserInput = ({ user, calculatePoint }) => {
             },
         }).then(resp => resp.json().then(data => {
             data = data.filter(project => project.i_am_member)
+            data = data.sort((a, b) => {
+                let date_a = Date.parse(a.created_date)
+                let date_b = Date.parse(b.created_date)
+                return date_b - date_a
+            })
             setAvailableProjects(data)
         }))
     }, [user])
