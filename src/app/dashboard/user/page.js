@@ -91,13 +91,13 @@ export default function Dashboard() {
     }
 
     return <main className="flex flex-col p-8 gap-4">
-        <div className="flex w-full p-8 border border-pink-0 bg-purple-50 items-center gap-4">
+        <div className="flex flex-wrap justify-center w-full p-8 border border-pink-0 bg-purple-50 items-center gap-4">
             <img className="rounded-full" src={user?.photo} width={64} height={64} ></img>
-            <div className="flex flex-col w-full">
+            <div className="flex flex-col w-24  sm:w-auto">
                 <span className="text-[18px]">{user?.username}</span>
                 <span className="text-[12px]">{user?.bio}</span>
             </div>
-            <div className="flex">
+            <div className="flex sm:ml-auto">
                 <div className="flex flex-col px-4">
                     <span className="text-[12px]">Point</span>
                     <span className="text-[32px] leading-[48px]">{currentPoint}</span>
@@ -119,15 +119,15 @@ export default function Dashboard() {
 const ContributionsSummary = ({ contributions, setCurrentPoint, currentPoint }) => {
     const DoneBadge = () => <span className="bg-green-100 border border-green-0 rounded-md px-2 py-1">Done</span>
     const OnGoingBadge = () => <span className=" min-w-min bg-yellow-100 border border-yellow-0 rounded-md px-2 py-1">On Going</span>
-    return <div className="w-full flex flex-col border border-pink-50">
-        <table>
+    return <div className="w-full overflow-x-auto flex flex-col border border-pink-50">
+        <table className="min-w-[500px]">
             <thead className="border border-pink-50">
                 <tr>
-                    <th className="py-[18px] px-8 text-left">Project</th>
-                    <th className="py-[18px] px-8 text-left">Milestone</th>
-                    <th className="py-[18px] px-8 text-left">User Story</th>
-                    <th className="py-[18px] px-8 text-left">Status</th>
-                    <th className="py-[18px] px-8 text-left">Point</th>
+                    <th className="py-2 px-2 lg:py-4 lg:px-8 text-left">Project</th>
+                    <th className="py-2 px-2 lg:py-4 lg:px-8 text-left">Milestone</th>
+                    <th className="py-2 px-2 lg:py-4 lg:px-8 text-left">User Story</th>
+                    <th className="py-2 px-2 lg:py-4 lg:px-8 text-left">Status</th>
+                    <th className="py-2 px-2 lg:py-4 lg:px-8 text-left">Point</th>
                 </tr>
             </thead>
             <tbody>
@@ -138,11 +138,11 @@ const ContributionsSummary = ({ contributions, setCurrentPoint, currentPoint }) 
                         let first_milestone = true
                         for (let user_stories of milestone.userstories) {
                             let current = <tr key={user_stories.id} className=" border-b-[1px] border-purple-0">
-                                <td className="py-[18px] px-8 text-left">{first_project ? project.name : ""}</td>
-                                <td className="py-[18px] px-8 text-left">{first_milestone ? milestone.name : ""}</td>
-                                <td className="py-[18px] px-8 text-left">{user_stories.name}</td>
-                                <td className="py-[18px] px-8 text-left">{user_stories.status == "Done" ? <DoneBadge /> : <OnGoingBadge />}</td>
-                                <td className="py-[18px] px-8 text-left">{user_stories.mypoint}</td>
+                                <td className="py-2 px-2 lg:py-4 lg:px-8 text-left">{first_project ? project.name : ""}</td>
+                                <td className="py-2 px-2 lg:py-4 lg:px-8 text-left">{first_milestone ? milestone.name : ""}</td>
+                                <td className="py-2 px-2 lg:py-4 lg:px-8 text-left">{user_stories.name}</td>
+                                <td className="py-2 px-2 lg:py-4 lg:px-8 text-left">{user_stories.status == "Done" ? <DoneBadge /> : <OnGoingBadge />}</td>
+                                <td className="py-2 px-2 lg:py-4 lg:px-8 text-left">{user_stories.mypoint}</td>
                             </tr>
                             first_project = false
                             first_milestone = false
@@ -210,13 +210,13 @@ const UserInput = ({ user, calculatePoint }) => {
         }))
     }, [user])
 
-    return <div className="flex gap-4">
-        <span className="mr-auto py-2 px-4">Point calculator</span>
+    return <div className="flex gap-4 w-full flex-wrap">
+        <span className="mr-auto py-2 px-4 hidden lg:block">Point calculator</span>
 
-        <input type="month" value={month} onChange={(e) => setMonth(e.target.value)} placeholder="select month" className="bg-purple-50 w-[344px] py-2 px-4"></input>
-        <div>
+        <input type="month" value={month} onChange={(e) => setMonth(e.target.value)} placeholder="select month" className="bg-purple-50 w-full lg:w-[344px]  py-2 px-4"></input>
+        <div className="flex gap-4">
             <div id="project-select-button" value={`${projects.length} ${projects.length > 1 ? "projects" : "project"} selected`} placeholder="select month" onClick={(e) => setIsSelectingProject(!isSelectingProject)}
-                className="bg-purple-50 w-[344px] py-2 px-4 cursor-pointer">
+                className="bg-purple-50 w-full lg:w-[344px] py-2 px-4 cursor-pointer">
                 {`${projects.length} ${projects.length > 1 ? "projects" : "project"} selected`}
             </div>
 
@@ -240,7 +240,8 @@ const UserInput = ({ user, calculatePoint }) => {
                     </div>
                 })}
             </div>
+
+            <button className="bg-pink-0 text-purple-100 py-2 px-4 rounded-md" onClick={(e) => calculatePoint(projects, month)}>Calculate</button>
         </div>
-        <button className="bg-pink-0 text-purple-100 py-2 px-4 rounded-md" onClick={(e) => calculatePoint(projects, month)}>Calculate</button>
     </div>
 }

@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
         <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png" />
         <link rel="manifest" href="/site.webmanifest"></link>
       </head>
-      <body className={`flex h-screen w-screen bg-purple-100 text-white ${poppins.className}`}>{children}
+      <body className={`flex h-screen w-screen overflow-x-hidden bg-purple-100 text-white ${poppins.className}`}>{children}
         <Toaster
           position='top-center'
         ></Toaster>

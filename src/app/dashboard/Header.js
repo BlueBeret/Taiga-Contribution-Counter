@@ -18,13 +18,13 @@ const Header = (params) => {
         }
     ]
 
-    return <div className='flex w-full px-8 py-[18px] gap-4 bg-purple-50'>
+    return <div className='flex w-full max-w-full px-8 py-[18px] gap-4 bg-purple-50'>
         <span className='w-40 font-bold text-2xl'>Taiga</span>
         {menus.map(menu => {
             let textColor = path.includes(menu.name.toLowerCase()) ? "text-pink-0" : "text-pink-100"
             return <div key={menu.name} onClick={(e) => document.location = "/dashboard/" + menu.name.toLowerCase()} className={`${textColor} flex gap-2 items-center text-[18px] cursor-pointer hover:text-pink-0`}>
                 <span>{menu.icon}</span>
-                <span className="font-bold">{menu.name}</span>
+                <span className="font-bold hidden sm:block">{menu.name}</span>
             </div>
         })}
         <button className="text-white ml-auto" onClick={(e) => { localStorage.clear(); document.location = "/login" }}>{LogoutIcon}</button>
