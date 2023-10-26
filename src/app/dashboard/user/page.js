@@ -7,8 +7,9 @@ import toast from "react-hot-toast";
 export default function Dashboard() {
     const user = useCheckUser()
     const [currentPoint, setCurrentPoint] = useState(0)
+    const [totalPoint, setTotalPoint] = useState(0)
     const [currentRank, setCurrentRank] = useState(0)
-    const [contributions, setContributions] = useState()
+    const [contributions, setContributions] = useState([])
 
     const calculatePoint = async (projects, month) => {
         // month is year-mm
@@ -85,10 +86,29 @@ export default function Dashboard() {
         }
         setContributions(milestones_byproject)
         setCurrentPoint(done_point)
+        setTotalPoint(total_point)
         toast.success("Dammn, you're so handsome", {
             id: loadingToast
         })
     }
+
+    useEffect(() => {
+        if (user?.auth_token && currentRank == 0) {
+            // fetch leaderboard
+            let hostname = new URL(user.photo)
+            hostname = hostname.origin
+            fetch("/api/leaderboard?hostname=" + hostname, {
+                headers: {
+                    Authorization: `Bearer ${user.auth_token}`
+                }
+            }).then(resp => resp.json().then(leaderboard => {
+                // find user index and set current point
+                let userIndex = leaderboard.users.findIndex(obj => obj.id == user.id)
+                setCurrentPoint(leaderboard.users[userIndex].point.toFixed(2))
+                setCurrentRank(userIndex+1)
+            }))
+        }
+    }, [user])
 
     return <main className="flex flex-col p-8 gap-4">
         <div className="flex flex-wrap justify-center w-full p-8 border border-pink-0 bg-purple-50 items-center gap-4">
@@ -112,11 +132,11 @@ export default function Dashboard() {
             </div>
         </div>
         <UserInput user={user} calculatePoint={calculatePoint} />
-        <ContributionsSummary contributions={contributions} />
+        <ContributionsSummary contributions={contributions} total_point={totalPoint} />
     </main>
 }
 
-const ContributionsSummary = ({ contributions, setCurrentPoint, currentPoint }) => {
+const ContributionsSummary = ({ contributions, setCurrentPoint, currentPoint, total_point }) => {
     const DoneBadge = () => <span className="bg-green-100 border border-green-0 rounded-md px-2 py-1">Done</span>
     const OnGoingBadge = () => <span className=" min-w-min bg-yellow-100 border border-yellow-0 rounded-md px-2 py-1">On Going</span>
     return <div className="w-full overflow-x-auto flex flex-col border border-pink-50">
@@ -152,6 +172,15 @@ const ContributionsSummary = ({ contributions, setCurrentPoint, currentPoint }) 
                     }
                     return dummy
                 })}
+                {contributions?.length == 0 ? <tr className=" border-b-[1px] border-purple-0"> <td className="py-2 px-2 lg:py-4 lg:px-8 text-left" colSpan={5}>No contributions yet</td></tr> :
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td className="py-2 px-2 lg:py-4 lg:px-8 text-left">Expected point</td>
+                        <td className="py-2 px-2 lg:py-4 lg:px-8 text-left font-bold text-lg">{total_point}</td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
