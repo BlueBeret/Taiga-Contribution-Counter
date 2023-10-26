@@ -85,8 +85,8 @@ export default function Dashboard() {
             })
         }
         setContributions(milestones_byproject)
-        setCurrentPoint(done_point)
-        setTotalPoint(total_point)
+        setCurrentPoint(done_point.toFixed(2))
+        setTotalPoint(total_point.toFixed(2))
         toast.success("Dammn, you're so handsome", {
             id: loadingToast
         })
