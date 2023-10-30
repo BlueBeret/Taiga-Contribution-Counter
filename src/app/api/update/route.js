@@ -1,4 +1,4 @@
-
+import tqdm from "tqdm";
 import clientPromise from "@/lib/mongoclient";
 
 const USERNAME = process.env.TAIGA_USERNAME;
@@ -149,7 +149,7 @@ export async function GET(req) {
             milestonethismonth = milestonethismonth.filter(milestone => milestone.estimated_finish && milestone.estimated_finish.includes(month))
 
             for (let milestone of milestonethismonth) {
-                for (let userstory of milestone.user_stories) {
+                for (let userstory of tqdm(milestone.user_stories)) {
                     let user_story = await fetch(host + `/api/v1/userstories/${userstory.id}`, {
                         headers: {
                             Authorization: `Bearer ${user.auth_token}`
@@ -162,7 +162,41 @@ export async function GET(req) {
                             user.task += 1
                             if (user_story.status_extra_info.name == "Done") {
                                 user.doneTask += 1
-                                user.point += user_story.total_points / user_story.assigned_users.length
+
+                                let point = 0
+                                let start_tag = user_story.description.indexOf("=point")
+                                let end_tag = user_story.description.indexOf("=", start_tag + 1)
+
+                                if (start_tag != -1 && end_tag != -1) {
+                                    // split by newline
+                                    let lines = user_story.description.substring(start_tag + 6, end_tag).split("\n")
+                                    // throw away empty lines
+                                    lines = lines.filter(line => line.length > 5)
+                                    // split by space
+                                    lines = lines.map(line => line.split(" "))
+
+                                    let tmp_total = 0
+                                    for (let line of lines) {
+                                        // find number
+                                        let number = line.find(word => !isNaN(word))
+                                        let isMyPoint = line.find(word => word == "@" + user.username)
+                                        if (number) {
+                                            tmp_total += parseFloat(number)
+                                        }
+                                        if (isMyPoint) {
+                                            console.log("found my point", number)
+                                            point = parseFloat(number)
+                                        }
+                                    }
+
+                                    if (tmp_total != user_story.total_points) {
+                                        console.log("total point is not equal", user_story.subject)
+                                    }
+                                }
+                                if (point == 0) {
+                                    point = user_story.total_points / user_story.assigned_users.length
+                                }
+                                user.point += point
                             }
                         }
                     }
