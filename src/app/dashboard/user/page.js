@@ -61,17 +61,52 @@ export default function Dashboard() {
                     })
                     data = await data.json()
                     if (data.assigned_users.includes(user.id)) {
+                        
+                        let desc = data.description
+                        // find string =point
+                        let start_tag = desc.indexOf("=point")
+                        let end_tag = desc.indexOf("=point", start_tag + 1)
+                        let point = 0
+                        if (start_tag != -1 && end_tag != -1) {
+                            // split by newline
+                            let lines = desc.substring(start_tag + 6, end_tag).split("\n")
+                            // throw away empty lines
+                            lines = lines.filter(line => line.length > 5)
+                            // split by space
+                            lines = lines.map(line => line.split(" "))
+
+                            let tmp_total = 0
+                            for (let line of lines) {
+                                // find number
+                                let number = line.find(word => !isNaN(word))
+                                let isMyPoint = line.find(word => word == "@" + user.username)
+                                if (number) {
+                                    tmp_total += parseFloat(number)
+                                }
+                                if (isMyPoint) {
+                                    console.log("found my point",number)
+                                    point = parseFloat(number)
+                                }
+
+                            }
+                            if (tmp_total != data.total_points) {
+                                toast.error("Total point is not equal to the sum of points in description, " + tmp_total + " != " + data.total_points + "")
+                            }
+                        }
+                        
+                        if (point == 0){
+                            point = data.total_points / data.assigned_users.length
+                        }
+                            total_point += point
+                        if (data.status_extra_info.name == "Done") {
+                            done_point += point
+                        }
                         userStories.push({
                             id: data.id,
-                            mypoint: data.total_points / data.assigned_users.length,
+                            mypoint: point,
                             name: data.subject,
                             status: data.status_extra_info.name,
                         })
-                        total_point += data.total_points / data.assigned_users.length
-
-                        if (data.status_extra_info.name == "Done") {
-                            done_point += data.total_points / data.assigned_users.length
-                        }
                     }
                 }
                 userStoryByMilestone.push({
@@ -105,7 +140,7 @@ export default function Dashboard() {
                 // find user index and set current point
                 let userIndex = leaderboard.users.findIndex(obj => obj.id == user.id)
                 setCurrentPoint(leaderboard.users[userIndex].point.toFixed(2))
-                setCurrentRank(userIndex+1)
+                setCurrentRank(userIndex + 1)
             }))
         }
     }, [user])
