@@ -7,14 +7,22 @@ const Header = (params) => {
         {
             name: "Leaderboard",
             icon: LeaderboardIcon,
+            target: "/dashboard/leaderboard"
         },
         {
             name: "User",
             icon: UserIcon,
+            target: "/dashboard/user"
+        },
+        {
+            name: "LSS",
+            icon: CalendarIcon,
+            target: "/dashboard/sprintsummary"
         },
         {
             name: "Project",
             icon: FolderIcon,
+            target: "/dashboard/project"
         }
     ]
 
@@ -22,7 +30,7 @@ const Header = (params) => {
         <span className='w-40 font-bold text-2xl'>Taiga</span>
         {menus.map(menu => {
             let textColor = path.includes(menu.name.toLowerCase()) ? "text-pink-0" : "text-pink-100"
-            return <div key={menu.name} onClick={(e) => document.location = "/dashboard/" + menu.name.toLowerCase()} className={`${textColor} flex gap-2 items-center text-[18px] cursor-pointer hover:text-pink-0`}>
+            return <div key={menu.name} onClick={(e) => document.location = menu.target} className={`${textColor} flex gap-2 items-center text-[18px] cursor-pointer hover:text-pink-0`}>
                 <span>{menu.icon}</span>
                 <span className="font-bold hidden sm:block">{menu.name}</span>
             </div>
@@ -71,6 +79,18 @@ const LogoutIcon = <svg width="24" height="24" viewBox="0 0 24 24" fill="none" x
         </clipPath>
     </defs>
 </svg>
+
+const CalendarIcon = <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g clipPath="url(#clip0_51_437)">
+        <path fillRule="evenodd" clipRule="evenodd" d="M3 5C3 3.89542 3.89542 3 5 3H7V2H9V3H11H13H15V2H17V3H19C20.1046 3 21 3.89542 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89542 21 3 20.1046 3 19V5ZM5 8V5H7V6H9V5H15V6H17V5H19V8H5ZM5 10V19H19V10H5Z" fill="currentColor" />
+    </g>
+    <defs>
+        <clipPath id="clip0_51_437">
+            <rect width="24" height="24" fill="white" />
+        </clipPath>
+    </defs>
+</svg>
+
 
 
 export default Header
