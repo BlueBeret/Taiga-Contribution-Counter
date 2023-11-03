@@ -2,12 +2,14 @@
 import { useEffect, useState } from "react";
 import { useCheckUser } from "../../../hooks/authHooks";
 import toast from "react-hot-toast";
+import "./hyperlink.css"
 
 
 export default function Dashboard() {
     const user = useCheckUser()
     const [totalPoint, setTotalPoint] = useState(0)
     const [contributions, setContributions] = useState([])
+    const [detail, setDetail] = useState(false)
 
     const summarizeSprint = async (projects) => {
         // month is year-mm
@@ -62,11 +64,12 @@ export default function Dashboard() {
                     tmp.id = user
                     tmp.user_story = []
                     tmp.total_point = 0
+                    console.log(user_story)
                     tmp.user_story.push({
                         id: user_story.id,
                         name: user_story.subject,
                         point: user_story.total_points / user_story.assigned_users.length,
-                        link: hostname + `/projects/${projects[0].id}/milestones/${lastmilestone.id}/userstories/${user_story.id}`
+                        link: hostname + `/project/${user_story.project_extra_info.slug}/us/${user_story.ref}`
                     })
                     tmp.total_point += user_story.total_points / user_story.assigned_users.length
                     users.push(tmp)
@@ -120,24 +123,26 @@ export default function Dashboard() {
             user.name = user_data.username
             user.photo = user_data.photo
         }
+        // sort users by id
+        users = users.sort((a, b) => a.id - b.id)
+
         setContributions(users)
         setTotalPoint(global_total_point.toFixed(2))
         toast.success("Summarized", { id: tid })
     }
     return <main className="flex flex-col p-8 gap-4">
-        <UserInput user={user} calculatePoint={summarizeSprint} />
-        <SprintSummary contributions={contributions} total_point={totalPoint} />
+        <UserInput user={user} calculatePoint={summarizeSprint} detail={detail} setDetail={setDetail} />
+        <SprintSummary contributions={contributions} total_point={totalPoint} detail={detail} setDetail={setDetail} />
     </main>
 }
 
-const SprintSummary = ({ contributions, setCurrentPoint, currentPoint, total_point }) => {
-    const [detail, setDetail] = useState(false)
+const SprintSummary = ({ contributions, setDetail, detail, total_point }) => {
     return <div className="overflow-x-auto flex flex-col justify-center w-full">
-        <table className="min-w-[500px] max-w-min mx-auto">
-            <thead className="border border-pink-50">
-                <tr>
+        <table className="min-w-[375px] max-w-min mx-auto">
+            <thead className=" border border-pink-50">
+                <tr className="">
                     <th className="py-2 px-2 lg:py-4 lg:px-8 text-left">User</th>
-                    {detail && <th className="py-2 px-2 lg:py-4 lg:px-8 text-left">User Story</th>}
+                    {detail && <th className="py-2 px-2 lg:py-4 lg:px-8 text-left whitespace-nowrap">User Story</th>}
                     <th className="py-2 px-2 lg:py-4 lg:px-8 text-left">Point</th>
                 </tr>
             </thead>
@@ -152,12 +157,16 @@ const SprintSummary = ({ contributions, setCurrentPoint, currentPoint, total_poi
                                         <span>{user.name}</span>
                                     </div>
                                 </td>
-                                <td className="py-2 px-2 lg:py-4 lg:px-8 text-left w-[1px] whitespace-nowrap">{user_story.name}</td>
+                                <td className="py-2 px-2 lg:py-4 lg:px-8 text-left w-[1px] whitespace-nowrap">
+                                    <a href={user_story.link} target="_blank">{user_story.name}</a>
+                                </td>
                                 <td className="py-2 px-2 lg:py-4 lg:px-8 text-left  w-[1px]">{user_story.point.toFixed(2)}</td>
                             </tr>
                         }
                         return <tr key={index2} className="border border-b-0 border-t-0 border-l-pink-50 border-r-pink-50">
-                            <td className="py-2 px-2 lg:py-4 lg:px-8 text-left  w-[1px] whitespace-nowrap ">{user_story.name}</td>
+                            <td className="py-2 px-2 lg:py-4 lg:px-8 text-left  w-[1px] whitespace-nowrap ">
+                                <a href={user_story.link} target="_blank">{user_story.name}</a>
+                            </td>
                             <td className="py-2 px-2 lg:py-4 lg:px-8 text-left w-[1px]">{user_story.point.toFixed(2)}</td>
                         </tr>
                     })
@@ -192,7 +201,7 @@ const SprintSummary = ({ contributions, setCurrentPoint, currentPoint, total_poi
     </div>
 }
 
-const UserInput = ({ user, calculatePoint }) => {
+const UserInput = ({ user, calculatePoint, detail, setDetail }) => {
     const [availableProjects, setAvailableProjects] = useState([
         {
             name: "Project 1",
@@ -248,6 +257,9 @@ const UserInput = ({ user, calculatePoint }) => {
         <span className="mr-auto py-2 px-4 hidden lg:block">Sprint Summary</span>
 
         <div className="flex gap-4">
+            <div className="h-full flex items-center">
+                <button onClick={(e) => setDetail(!detail)} className={`transition-all delay-150  ${!detail ? "text-[#666666] border border-[#666666]" : " border border-pink-0"} px-4 py-2 rounded-md`}> detail</button>
+            </div>
             <div id="project-select-button" placeholder="select month" onClick={(e) => setIsSelectingProject(!isSelectingProject)}
                 className="bg-purple-50 w-full lg:w-[344px] py-2 px-4 cursor-pointer">
                 {projects[0]?.name || "Select project"}
@@ -273,7 +285,6 @@ const UserInput = ({ user, calculatePoint }) => {
                     </div>
                 })}
             </div>
-
             <button className="bg-pink-0 text-purple-100 py-2 px-4 rounded-md" onClick={(e) => calculatePoint(projects)}>Summarize</button>
         </div>
     </div>
