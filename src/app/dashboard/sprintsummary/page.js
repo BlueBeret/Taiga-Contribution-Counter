@@ -137,8 +137,19 @@ export default function Dashboard() {
 }
 
 const SprintSummary = ({ contributions, setDetail, detail, total_point }) => {
-    return <div className="overflow-x-auto flex flex-col justify-center w-full">
-        <table className="min-w-[375px] max-w-min mx-auto">
+
+    const handleCopyToClipboard = () => {
+        let csv = ["user,point\n"]
+        contributions.forEach(contribution => {
+            csv.push(`${contribution.name},${contribution.total_point.toFixed(2)}\n`)
+        })
+        csv = csv.join("")
+        navigator.clipboard.writeText(csv).then(() => {
+            toast.success("Copied to clipboard")
+        })
+    }
+    return <div className="overflow-x-auto flex justify-center gap-4 items-start w-full">
+        <table className="min-w-[375px] max-w-min">
             <thead className=" border border-pink-50">
                 <tr className="">
                     <th className="py-2 px-2 lg:py-4 lg:px-8 text-left">User</th>
@@ -198,6 +209,11 @@ const SprintSummary = ({ contributions, setDetail, detail, total_point }) => {
                 </tr>}
             </tbody>
         </table>
+        {total_point != 0 && <div className="text-center mt-2"> 
+            <button className="bg-pink-0 text-purple-100 py-2 px-4 rounded-md " onClick={handleCopyToClipboard}>
+                Total point: {total_point}
+            </button>
+        </div>}
     </div>
 }
 
