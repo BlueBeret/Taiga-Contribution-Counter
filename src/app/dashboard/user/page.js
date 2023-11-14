@@ -73,7 +73,7 @@ export default function Dashboard() {
                             // throw away empty lines
                             lines = lines.filter(line => line.length > 5)
                             // split by space
-                            lines = lines.map(line => line.split(" "))
+                            lines = lines.map(line => line.split(/\s+/))
 
                             let tmp_total = 0
                             for (let line of lines) {
