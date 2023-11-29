@@ -28,20 +28,44 @@ const setDuck = (duck) => {
 const getFloor = (reset) => {
     let floor = localStorage.getItem("floor")
     if (!floor || reset) {
+        console.log("new floor")
         let a = { bottom: 0, top: 0, left: 0, right: 0 }
+        let elem;
+        let id = Math.random().toString(36).substring(7);
         while (a.bottom == 0) {
             let elems = document.getElementsByClassName("floor")
             let randomIndex = Math.floor(Math.random() * elems.length)
-            a = elems[Math.floor(randomIndex)].getBoundingClientRect()
+            elem = elems[Math.floor(randomIndex)]
+            a = elem.getBoundingClientRect();
         }
-        return {
+        elem.id = id;
+        floor = {
             top: a.top,
             left: a.left,
             right: a.right,
-            bottom: a.bottom
+            bottom: a.bottom,
+            id: id
         }
+        setFloor(floor);
+        return floor;
     }
-    return JSON.parse(floor)
+    floor = JSON.parse(floor)
+
+    let elem = document.getElementById(floor.id)
+    if (!elem) {
+        console.log("floor not found")
+        return getFloor(true)
+    }
+    floor = elem.getBoundingClientRect();
+    floor = {
+        top: floor.top,
+        left: floor.left,
+        right: floor.right,
+        bottom: floor.bottom,
+        id: elem.id
+    }
+    setFloor(floor);
+    return floor;
 }
 const setFloor = (floor) => {
     localStorage.setItem("floor", JSON.stringify(floor))
@@ -74,66 +98,72 @@ const Header = (params) => {
     var duckProp = getDuck();
     // start duck
 
-    const mainLoop = () => {
-        const duck = document.getElementById("duck");
-        const floorRect = getFloor()
+    const mainLoop = async () => {
+        while (1) {
+            const duck = document.getElementById("duck");
+            const floorRect = getFloor()
 
-        if (!duck || !floorRect) {
-            return;
-        }
+            if (!duck || !floorRect) {
+                return;
+            }
 
 
-        // gravity
-        if (duckProp.y + duckProp.height < floorRect.bottom) {
-            duckProp.y += 1;
-        }
-        if (duckProp.y + duckProp.height > floorRect.bottom) {
-            duckProp.y -= 1;
-        }
+            
 
-        duck.style.left = duckProp.x + "px";
-        duck.style.top = duckProp.y + "px";
+            duck.style.left = duckProp.x + "px";
+            duck.style.top = duckProp.y + "px";
 
-        // move duck
-        let speed = 0.6;
-        duckProp.x += duckProp.direction * speed
-        if (duckProp.x + duckProp.width > floorRect.right) {
-            duckProp.direction = -1;
-        } else if (duckProp.x < floorRect.left) {
-            duckProp.direction = 1;
-        }
+            let isInBoxHorizontally = duckProp.x + duckProp.width > floorRect.left && duckProp.x < floorRect.right;
 
-        // update animation
-        if (duckProp.direction == 1 && duck.src.includes("inv")) {
-            duck.src = "/Walking.gif";
+            // move duck
+            let speed = isInBoxHorizontally? 0.4 : 1.2;
+            duckProp.x += duckProp.direction * speed
+            if (duckProp.x + duckProp.width > floorRect.right) {
+                duckProp.direction = -1;
+            } else if (duckProp.x < floorRect.left) {
+                duckProp.direction = 1;
+            }
+
+            // update animation
+            if (duckProp.direction == 1 && duck.src.includes("inv")) {
+                duck.src = "/Walking.gif";
+            }
+            if (duckProp.direction == -1 && duck.src.includes("Walking.gif")) {
+                duck.src = "/Walking_inv.gif";
+            }
+
+            // gravity
+            // check if duck with in the box, if yes apply gravity. if no wait for duck to come back
+            if (isInBoxHorizontally) {
+                if (duckProp.y + duckProp.height < floorRect.bottom) {
+                    duckProp.y += 1;
+                }
+                if (duckProp.y + duckProp.height > floorRect.bottom) {
+                    duckProp.y -= 1;
+                }
+            }
+
+            setDuck(duckProp);
+            await new Promise(r => setTimeout(r, 1));
         }
-        if (duckProp.direction == -1 && duck.src.includes("Walking.gif")) {
-            duck.src = "/Walking_inv.gif";
-        }
-        setDuck(duckProp);
 
     }
 
     var duckInterval = null;
     useEffect(() => {
-        let floor = getFloor();
-        // set interval for main loop
-        duckInterval = setInterval(() => {
+        getFloor();
+
+        // start the main loop
+        duckInterval = setTimeout(() => {
             mainLoop();
-        }, 1)
+        }, 1000)
 
 
         let doclistener = document.addEventListener("click", (e) => {
-            if (Math.random() < 0.4) {
+            if (Math.random() < 0.3) {
                 setFloor(getFloor(true));
             }
         })
-
-        return () => {
-            clearInterval(duckInterval);
-            document.removeEventListener("click", doclistener);
-        }
-
     }, [])
     // end duck
 
@@ -152,7 +182,7 @@ const Header = (params) => {
             onClick={(e) => {
                 toast.success("Quack!")
             }
-        } 
+            }
         ></img>
     </div>
 }
