@@ -2,6 +2,50 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
+
+const getDuck = () => {
+    let duck = localStorage.getItem("duck")
+    if (!duck) {
+        duck = {
+            x: 0,
+            y: 0,
+            height: 24,
+            width: 24,
+            direction: 1
+        }
+        localStorage.setItem("duck", JSON.stringify(duck))
+    } else {
+        duck = JSON.parse(duck)
+    }
+    return duck;
+}
+
+const setDuck = (duck) => {
+    localStorage.setItem("duck", JSON.stringify(duck))
+}
+
+const getFloor = (reset) => {
+    let floor = localStorage.getItem("floor")
+    if (!floor || reset) {
+        let a = { bottom: 0, top: 0, left: 0, right: 0 }
+        while (a.bottom == 0) {
+            let elems = document.getElementsByClassName("border")
+            let randomIndex = Math.floor(Math.random() * elems.length)
+            a = elems[Math.floor(randomIndex)].getBoundingClientRect()
+        }
+        return {
+            top: a.top,
+            left: a.left,
+            right: a.right,
+            bottom: a.bottom
+        }
+    }
+    return JSON.parse(floor)
+}
+const setFloor = (floor) => {
+    localStorage.setItem("floor", JSON.stringify(floor))
+}
+
 const Header = (params) => {
     const path = usePathname();
     const menus = [
@@ -26,37 +70,29 @@ const Header = (params) => {
             target: "/dashboard/project"
         }
     ]
-    var duckProp = {
-        x: 0,
-        y: 0,
-        height: 24,
-        width: 24,
-        direction: 1
-    }
+    var duckProp = getDuck();
     // start duck
 
     const mainLoop = () => {
         const duck = document.getElementById("duck");
-        const floor = document.getElementById("header");
+        const floorRect = getFloor()
 
-        if (!duck || !floor) {
+        if (!duck || !floorRect) {
             return;
         }
 
-        const floorRect = floor.getBoundingClientRect();
-
-        
-
-        let lowest_y = floorRect.top + floorRect.height
 
         // gravity
-        if (duckProp.y + duckProp.height < lowest_y) {
+        if (duckProp.y + duckProp.height < floorRect.bottom) {
             duckProp.y += 1;
+        }
+        if (duckProp.y + duckProp.height > floorRect.bottom) {
+            duckProp.y -= 1;
         }
 
         duck.style.left = duckProp.x + "px";
         duck.style.top = duckProp.y + "px";
-        
+
         // move duck
         duckProp.x += duckProp.direction;
         if (duckProp.x + duckProp.width > floorRect.right) {
@@ -69,27 +105,35 @@ const Header = (params) => {
         if (duckProp.direction == 1 && duck.src.includes("inv")) {
             duck.src = "/Walking.gif";
         }
-        if (duckProp.direction == -1 && duck.src.includes("Walking.gif")){
+        if (duckProp.direction == -1 && duck.src.includes("Walking.gif")) {
             duck.src = "/Walking_inv.gif";
         }
-        
+        setDuck(duckProp);
+
     }
 
     var duckInterval = null;
     useEffect(() => {
+        let floor = getFloor();
         // set interval for main loop
         duckInterval = setInterval(() => {
             mainLoop();
         }, 1)
 
+
+        let doclistener = document.addEventListener("click", (e) => {
+            setFloor(getFloor(true));
+        })
+
         return () => {
             clearInterval(duckInterval);
+            document.removeEventListener("click", doclistener);
         }
 
     }, [])
     // end duck
 
-    return <div id="header" className='flex w-full max-w-full px-8 py-[18px] gap-4 bg-purple-50'>
+    return <div id="header" className='flex w-full max-w-full px-8 py-[18px] gap-4 bg-purple-50 floor'>
         <span className='w-40 font-bold text-2xl'>Taiga</span>
         {menus.map(menu => {
             let textColor = path.includes(menu.target) ? "text-pink-0" : "text-pink-100"

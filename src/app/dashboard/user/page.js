@@ -146,7 +146,7 @@ export default function Dashboard() {
     }, [user])
 
     return <main className="flex flex-col p-8 gap-4">
-        <div className="flex flex-wrap justify-center w-full p-8 border border-pink-0 bg-purple-50 items-center gap-4">
+        <div className="flex flex-wrap justify-center w-full p-8 floor border border-pink-0 bg-purple-50 items-center gap-4">
             <img className="rounded-full" src={user?.photo} width={64} height={64} ></img>
             <div className="flex flex-col w-24  sm:w-auto">
                 <span className="text-[18px]">{user?.username}</span>
