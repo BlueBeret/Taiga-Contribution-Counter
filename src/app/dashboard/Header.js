@@ -1,6 +1,7 @@
 'use client';
 
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 const Header = (params) => {
     const path = usePathname();
     const menus = [
@@ -25,8 +26,70 @@ const Header = (params) => {
             target: "/dashboard/project"
         }
     ]
+    var duckProp = {
+        x: 0,
+        y: 0,
+        height: 24,
+        width: 24,
+        direction: 1
+    }
+    // start duck
 
-    return <div className='flex w-full max-w-full px-8 py-[18px] gap-4 bg-purple-50'>
+    const mainLoop = () => {
+        const duck = document.getElementById("duck");
+        const floor = document.getElementById("header");
+
+        if (!duck || !floor) {
+            return;
+        }
+
+        const floorRect = floor.getBoundingClientRect();
+
+        
+
+        let lowest_y = floorRect.top + floorRect.height
+
+        // gravity
+        if (duckProp.y + duckProp.height < lowest_y) {
+            duckProp.y += 1;
+        }
+
+        duck.style.left = duckProp.x + "px";
+        duck.style.top = duckProp.y + "px";
+        
+        // move duck
+        duckProp.x += duckProp.direction;
+        if (duckProp.x + duckProp.width > floorRect.right) {
+            duckProp.direction = -1;
+        } else if (duckProp.x < floorRect.left) {
+            duckProp.direction = 1;
+        }
+
+        // update animation
+        if (duckProp.direction == 1 && duck.src.includes("inv")) {
+            duck.src = "/Walking.gif";
+        }
+        if (duckProp.direction == -1 && duck.src.includes("Walking.gif")){
+            duck.src = "/Walking_inv.gif";
+        }
+        
+    }
+
+    var duckInterval = null;
+    useEffect(() => {
+        // set interval for main loop
+        duckInterval = setInterval(() => {
+            mainLoop();
+        }, 1)
+
+        return () => {
+            clearInterval(duckInterval);
+        }
+
+    }, [])
+    // end duck
+
+    return <div id="header" className='flex w-full max-w-full px-8 py-[18px] gap-4 bg-purple-50'>
         <span className='w-40 font-bold text-2xl'>Taiga</span>
         {menus.map(menu => {
             let textColor = path.includes(menu.target) ? "text-pink-0" : "text-pink-100"
@@ -36,6 +99,8 @@ const Header = (params) => {
             </div>
         })}
         <button className="text-white ml-auto" onClick={(e) => { localStorage.clear(); document.location = "/login" }}>{LogoutIcon}</button>
+        <img id="duck" className=" fixed w-6 h-6 bg-transparent"
+            src="/Walking.gif"></img>
     </div>
 }
 
