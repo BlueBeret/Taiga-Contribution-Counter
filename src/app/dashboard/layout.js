@@ -3,6 +3,7 @@ import { Metal_Mania, Poppins } from 'next/font/google'
 import { Toaster } from "react-hot-toast";
 import { headers } from 'next/headers';
 import Header from './Header';
+import Script from 'next/script';
 
 export const metadata = {
     title: 'Taiga Point Counter',
@@ -19,6 +20,8 @@ export default function RootLayout({ children }) {
     const fullUrl = headersList.get('referer') || "";
     console.log(fullUrl);
     return (<div className='flex flex-col w-full h-full'>
+        <Script src="https://cdn.counter.dev/script.js" data-id="a441cb5b-1922-4da1-aaa8-0b1b471180cf" data-utcoffset="7"></Script>
+
         <Header path={fullUrl}></Header>
         <div className='w-screen'
             style={{
