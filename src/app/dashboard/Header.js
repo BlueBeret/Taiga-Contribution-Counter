@@ -116,7 +116,7 @@ const Header = (params) => {
             let isInBoxHorizontally = duckProp.x + duckProp.width > floorRect.left && duckProp.x < floorRect.right;
 
             // move duck
-            let speed = isInBoxHorizontally? 0.4 : 1.2;
+            let speed = isInBoxHorizontally? 0.4 : 0.4;
             duckProp.x += duckProp.direction * speed
             if (duckProp.x + duckProp.width > floorRect.right) {
                 duckProp.direction = -1;
