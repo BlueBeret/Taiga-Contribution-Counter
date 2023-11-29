@@ -73,7 +73,7 @@ export default function Leaderboard() {
                 // point 2 decimal places
                 let point = user.point.toFixed(2)
                 if (point <= 0) return ""
-                return <div key={index} className={`w-full max-w-[500px] relative border flex items-center px-8 py-[18px] gap-4 ${rank > 3 ? "border-orange-0" : "border-yellow-0"}`}>
+                return <div key={index} className={`w-full max-w-[500px] relative border flex items-center px-8 py-[18px] gap-4 ${rank > 3 ? "border-orange-0" : "border-yellow-0 floor"}`}>
                     <img src={user.image} height={40} width={40} className="rounded-full"></img>
                     <span className="w-1/4 break-words">{user.username}</span>
                     <div className="flex w-full gap-2">

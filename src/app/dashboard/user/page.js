@@ -176,7 +176,7 @@ const ContributionsSummary = ({ contributions, setCurrentPoint, currentPoint, to
     const OnGoingBadge = () => <span className=" min-w-min bg-yellow-100 border border-yellow-0 rounded-md px-2 py-1">On Going</span>
     return <div className="w-full overflow-x-auto flex flex-col border border-pink-50">
         <table className="min-w-[500px]">
-            <thead className="border border-pink-50">
+            <thead className="floor border border-pink-50">
                 <tr>
                     <th className="py-2 px-2 lg:py-4 lg:px-8 text-left">Project</th>
                     <th className="py-2 px-2 lg:py-4 lg:px-8 text-left">Milestone</th>
@@ -192,7 +192,7 @@ const ContributionsSummary = ({ contributions, setCurrentPoint, currentPoint, to
                     for (let milestone of project.milestones) {
                         let first_milestone = true
                         for (let user_stories of milestone.userstories) {
-                            let current = <tr key={user_stories.id} className=" border-b-[1px] border-purple-0">
+                            let current = <tr key={user_stories.id} className="border-b-[1px] border-purple-0">
                                 <td className="py-2 px-2 lg:py-4 lg:px-8 text-left">{first_project ? project.name : ""}</td>
                                 <td className="py-2 px-2 lg:py-4 lg:px-8 text-left">{first_milestone ? milestone.name : ""}</td>
                                 <td className="py-2 px-2 lg:py-4 lg:px-8 text-left">{user_stories.name}</td>
@@ -207,7 +207,7 @@ const ContributionsSummary = ({ contributions, setCurrentPoint, currentPoint, to
                     }
                     return dummy
                 })}
-                {contributions?.length == 0 ? <tr className=" border-b-[1px] border-purple-0"> <td className="py-2 px-2 lg:py-4 lg:px-8 text-left" colSpan={5}>No contributions yet</td></tr> :
+                {contributions?.length == 0 ? <tr className="floor border-b-[1px] border-purple-0"> <td className="py-2 px-2 lg:py-4 lg:px-8 text-left" colSpan={5}>No contributions yet</td></tr> :
                     <tr>
                         <td></td>
                         <td></td>

@@ -150,7 +150,7 @@ const SprintSummary = ({ contributions, setDetail, detail, total_point }) => {
     }
     return <div className="overflow-x-auto flex justify-center gap-4 items-start w-full">
         <table className="min-w-[375px] max-w-min">
-            <thead className=" border border-pink-50">
+            <thead className="floor border border-pink-50">
                 <tr className="">
                     <th className="py-2 px-2 lg:py-4 lg:px-8 text-left">User</th>
                     {detail && <th className="py-2 px-2 lg:py-4 lg:px-8 text-left whitespace-nowrap">User Story</th>}

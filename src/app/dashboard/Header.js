@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
+import toast from "react-hot-toast";
 
 const getDuck = () => {
     let duck = localStorage.getItem("duck")
@@ -29,7 +30,7 @@ const getFloor = (reset) => {
     if (!floor || reset) {
         let a = { bottom: 0, top: 0, left: 0, right: 0 }
         while (a.bottom == 0) {
-            let elems = document.getElementsByClassName("border")
+            let elems = document.getElementsByClassName("floor")
             let randomIndex = Math.floor(Math.random() * elems.length)
             a = elems[Math.floor(randomIndex)].getBoundingClientRect()
         }
@@ -94,7 +95,8 @@ const Header = (params) => {
         duck.style.top = duckProp.y + "px";
 
         // move duck
-        duckProp.x += duckProp.direction;
+        let speed = 0.6;
+        duckProp.x += duckProp.direction * speed
         if (duckProp.x + duckProp.width > floorRect.right) {
             duckProp.direction = -1;
         } else if (duckProp.x < floorRect.left) {
@@ -122,7 +124,9 @@ const Header = (params) => {
 
 
         let doclistener = document.addEventListener("click", (e) => {
-            setFloor(getFloor(true));
+            if (Math.random() < 0.4) {
+                setFloor(getFloor(true));
+            }
         })
 
         return () => {
@@ -133,7 +137,7 @@ const Header = (params) => {
     }, [])
     // end duck
 
-    return <div id="header" className='flex w-full max-w-full px-8 py-[18px] gap-4 bg-purple-50 floor'>
+    return <div id="header" className='floor flex w-full max-w-full px-8 py-[18px] gap-4 bg-purple-50 floor'>
         <span className='w-40 font-bold text-2xl'>Taiga</span>
         {menus.map(menu => {
             let textColor = path.includes(menu.target) ? "text-pink-0" : "text-pink-100"
@@ -144,7 +148,12 @@ const Header = (params) => {
         })}
         <button className="text-white ml-auto" onClick={(e) => { localStorage.clear(); document.location = "/login" }}>{LogoutIcon}</button>
         <img id="duck" className=" fixed w-6 h-6 bg-transparent"
-            src="/Walking.gif"></img>
+            src="/Walking.gif"
+            onClick={(e) => {
+                toast.success("Quack!")
+            }
+        } 
+        ></img>
     </div>
 }
 
