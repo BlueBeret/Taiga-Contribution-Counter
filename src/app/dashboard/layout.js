@@ -4,6 +4,7 @@ import { Toaster } from "react-hot-toast";
 import { headers } from 'next/headers';
 import Header from './Header';
 import Script from 'next/script';
+import { Analytics } from '@vercel/analytics/react';
 
 export const metadata = {
     title: 'Taiga Point Counter',
@@ -33,6 +34,7 @@ export default function RootLayout({ children }) {
         <Toaster
             position='top-center'
         ></Toaster>
+        <Analytics />
     </div>
     )
 }
