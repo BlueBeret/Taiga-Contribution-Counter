@@ -1,4 +1,6 @@
+'use client';
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 export function useCheckUser(params) {
     const [user, setUser] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -34,13 +36,14 @@ export function useCheckUser(params) {
                     } else {
                         console.log("no user in check", resp)
                         localStorage.removeItem("taiga_user");
-                        document.location = "/login";
+                        toast.error("Your session has expired, please login again");
                     } 
                 })
                 .catch((err) => {
                     localStorage.removeItem("taiga_user");
+                    alert(err);
+                    toast.error("Unknown error has occured, please login again");
                     // redirect to login
-                    document.location = "/login";
                 });
         }
     }, [user, isLoading])
