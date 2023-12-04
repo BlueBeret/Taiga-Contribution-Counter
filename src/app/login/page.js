@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 function Login(params) {
-    const [hostname, setHostname] = useState("")
+    const [hostname, setHostname] = useState(process.env.NEXT_PUBLIC_BACKEND_URL)
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
 
@@ -92,10 +92,10 @@ function Login(params) {
                     <h2 className=" text-[20px] leading-[30px]">Sign in to your Taiga account</h2>
                 </div>
                 <form onSubmit={handleLogin} className="flex flex-col gap-4">
-                    <div className="flex items-center gap-1 border border-purple-0 bg-purple-50 px-2 py-[10px] rounded-[4px]">
+                    { !process.env.NEXT_PUBLIC_BACKEND_URL && <div className="flex items-center gap-1 border border-purple-0 bg-purple-50 px-2 py-[10px] rounded-[4px]">
                         {HostIcon}
                         <input name="hostname" className="bg-transparent w-full" placeholder="Hostname" title="example: http://10.10.10.1:9000" type="text" value={hostname} onChange={e => setHostname(e.target.value)}></input>
-                    </div>
+                    </div>}
                     <div name="username" className="flex items-center gap-1 border border-purple-0 bg-purple-50 px-2 py-[10px] rounded-[4px]">
                         {UserIcon}
                         <input className="bg-transparent w-full" placeholder="Username" type="text" value={username} onChange={e => setUsername(e.target.value)}></input>
