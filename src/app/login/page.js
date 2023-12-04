@@ -52,13 +52,26 @@ function Login(params) {
                     username: username,
                 })
             }
-        ).then(resp => resp.json().then(data => {
+        ).then(resp => resp.json().then(user_data => {
+            let data = Object.assign({}, user_data)
             if (data.code == "invalid_credentials")
                 toast.error(data.detail, {
                     id: toastLoading
                 })
             else if (data.username) {
                 // save data to localstorage
+                if (process.env.NEXT_PUBLIC_BACKEND_URL) {
+                    // check if hostname is same as the response
+                    let url = new URL(data.photo);
+                    let domain = url.origin;
+                    // if not, set as NEXT_PUBLIC_BACKEND_URL
+                    if (domain != hostname) {
+                        data.photo = hostname + url.pathname
+                        let tmp = new URL(data.big_photo)
+                        data.big_photo = hostname + tmp.pathname
+                    }
+                }
+
                 localStorage.setItem("taiga_user", JSON.stringify(data))
                 toast.success("Hi " + data.username + ", have a great day!", {
                     id: toastLoading
@@ -70,6 +83,7 @@ function Login(params) {
             // handler error for data processing error
         }).catch(e => {
             console.log(e)
+            alert(e)
             toast.error("Platform error, please report this problem to me", {
                 id: toastLoading
             }
