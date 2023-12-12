@@ -23,6 +23,7 @@ export async function GET(req) {
             });
         }
         let currentMonth = new Date().toISOString().slice(0, 7);
+        console.log("Getting leaderboard for " + hostname + " for month " + currentMonth)
         let result = await db.collection("leaderboard").findOne({ hostname: hostname, month: currentMonth });
         return new Response(JSON.stringify(result), {
             headers: { "Content-Type": "application/json" },
