@@ -121,7 +121,10 @@ export default function Dashboard() {
                 console.log(user, users_data)
             }
             user.name = user_data.username
-            user.photo = user_data.photo
+            // replace origin with process.env
+            let tmp_photo = new URL(user_data.photo)
+            user.photo = process.env.NEXT_PUBLIC_BACKEND_URL + tmp_photo.pathname
+
         }
         // sort users by id
         users = users.sort((a, b) => a.id - b.id)
