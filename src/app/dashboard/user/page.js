@@ -139,6 +139,9 @@ export default function Dashboard() {
             }).then(resp => resp.json().then(leaderboard => {
                 // find user index and set current point
                 let userIndex = leaderboard.users.findIndex(obj => obj.id == user.id)
+                if (userIndex == -1) {
+                    return
+                }
                 setCurrentPoint(leaderboard.users[userIndex].point.toFixed(2))
                 setCurrentRank(userIndex + 1)
             }))

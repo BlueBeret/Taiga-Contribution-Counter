@@ -78,7 +78,7 @@ export default function Leaderboard() {
                     img = process.env.NEXT_PUBLIC_BACKEND_URL + new URL(user.image).pathname
                 } catch (e) {
                     img = "https://placehold.co/80"
-                } 
+                }
                 if (point <= 0) return ""
                 return <div key={index} className={`w-full max-w-[500px] relative border flex items-center px-8 py-[18px] gap-4 ${rank > 3 ? "border-orange-0" : "border-yellow-0 floor"}`}>
                     <img src={img} height={40} width={40} className="rounded-full"></img>
@@ -108,22 +108,29 @@ const Graph = ({ users }) => {
 
     const maxPoint = users[0].point
 
+
     return <div className="hidden lg:flex flex-col items-center justify-center overflow-hidden w-2/3 h-full">
         <h1 className="text-pink-0 text-[32px] leading-[48px]">Cat'O Meter</h1>
         <div className="flex items-end h-full w-full gap-4">
             {users.map((user, index) => {
+                let img = ""
+                try {
+                    img = process.env.NEXT_PUBLIC_BACKEND_URL + new URL(user.image).pathname
+                } catch (e) {
+                    img = "https://placehold.co/80"
+                }
                 let percent = user.point / maxPoint * 100
                 // set to int
                 percent = Math.floor(percent)
                 percent = percent + "%"
 
                 let point = user.point.toFixed(2)
-                return <div key={index} style={{height: "100%", display:"flex", justifyContent:"end", flexDirection:"column"}}>
+                return <div key={index} style={{ height: "100%", display: "flex", justifyContent: "end", flexDirection: "column" }}>
                     <span>{point}</span>
                     <div className={`w-[60px] bg-white`} style={
                         {
                             height: percent,
-                            backgroundImage: `url(${user.image})`,
+                            backgroundImage: `url(${img})`,
                             backgroundRepeat: "repeat-y"
                         }
                     } >
