@@ -3,8 +3,8 @@ import { Metal_Mania, Poppins } from 'next/font/google'
 import { Toaster } from "react-hot-toast";
 import { headers } from 'next/headers';
 import Header from './Header';
-import Script from 'next/script';
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export const metadata = {
     title: 'Taiga Point Counter',
@@ -34,6 +34,7 @@ export default function RootLayout({ children }) {
             position='top-center'
         ></Toaster>
         <Analytics />
+        <SpeedInsights/>
     </div>
     )
 }
