@@ -73,10 +73,11 @@ export default function Leaderboard() {
                 // point 2 decimal places
                 let point = user.point.toFixed(2)
                 // change image host
+                let img = ""
                 try {
-                    let img = process.env.NEXT_PUBLIC_BACKEND_URL + new URL(user.image).pathname
+                    img = process.env.NEXT_PUBLIC_BACKEND_URL + new URL(user.image).pathname
                 } catch (e) {
-                    let img = "https://placehold.co/80"
+                    img = "https://placehold.co/80"
                 } 
                 if (point <= 0) return ""
                 return <div key={index} className={`w-full max-w-[500px] relative border flex items-center px-8 py-[18px] gap-4 ${rank > 3 ? "border-orange-0" : "border-yellow-0 floor"}`}>
