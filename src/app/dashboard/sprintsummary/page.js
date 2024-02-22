@@ -122,8 +122,15 @@ export default function Dashboard() {
             }
             user.name = user_data.username
             // replace origin with process.env
-            let tmp_photo = new URL(user_data.photo)
-            user.photo = process.env.NEXT_PUBLIC_BACKEND_URL + tmp_photo.pathname
+
+            let tmp_photo;
+            try {
+                tmp_photo = new URL(user_data.photo)
+                user.photo = process.env.NEXT_PUBLIC_BACKEND_URL + tmp_photo.pathname
+            } catch (error) {
+                console.log(user_data.photo)
+                user.photo = "https://placehold.co/100"
+            }
 
         }
         // sort users by id
@@ -212,7 +219,7 @@ const SprintSummary = ({ contributions, setDetail, detail, total_point }) => {
                 </tr>}
             </tbody>
         </table>
-        {total_point != 0 && <div className="text-center mt-2"> 
+        {total_point != 0 && <div className="text-center mt-2">
             <button className="bg-pink-0 text-purple-100 py-2 px-4 rounded-md " onClick={handleCopyToClipboard}>
                 Total point: {total_point}
             </button>
