@@ -30,6 +30,8 @@ export default function Dashboard() {
         let milestones_byproject = []
         let done_point = 0
         let total_point = 0
+
+        let project_promises = []
         for (let project of projects) {
             let milestonethismonth = []
             let host = new URL(user.photo)
@@ -43,7 +45,6 @@ export default function Dashboard() {
                 })
                 data = await data.json()
                 // check if milestone is this month
-                // console.log(data)
                 milestonethismonth = data.filter(milestone => {
                     return milestone.estimated_finish.includes(month)
                 })
@@ -54,74 +55,94 @@ export default function Dashboard() {
                     })
             }
             let userStoryByMilestone = []
+
+            let milestone_promises = []
             for (let milestone of milestonethismonth) {
-                let userStories = []
+                let userStories = [];
+                let fetchPromises = [];
+
                 for (let userStory of milestone.user_stories) {
-                    let data = await fetch(host + `/api/v1/userstories/${userStory.id}`, {
+                    let fetchPromise = fetch(host + `/api/v1/userstories/${userStory.id}`, {
                         headers: {
                             Authorization: `Bearer ${user.auth_token}`
                         }
                     })
-                    data = await data.json()
-                    if (data.assigned_users.includes(user.id)) {
-                        
-                        let desc = data.description
-                        // find string =point
-                        let start_tag = desc.indexOf("=point")
-                        let end_tag = desc.indexOf("=point", start_tag + 1)
-                        let point = 0
-                        if (start_tag != -1 && end_tag != -1) {
-                            // split by newline
-                            let lines = desc.substring(start_tag + 6, end_tag).split("\n")
-                            // throw away empty lines
-                            lines = lines.filter(line => line.length > 5)
-                            // split by space
-                            lines = lines.map(line => line.split(/\s+/))
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.assigned_users.includes(user.id)) {
+                                let desc = data.description;
+                                // find string =point
+                                let start_tag = desc.indexOf("=point");
+                                let end_tag = desc.indexOf("=point", start_tag + 1);
+                                let point = 0;
+                                if (start_tag != -1 && end_tag != -1) {
+                                    // split by newline
+                                    let lines = desc.substring(start_tag + 6, end_tag).split("\n");
+                                    // throw away empty lines
+                                    lines = lines.filter(line => line.length > 5);
+                                    // split by space
+                                    lines = lines.map(line => line.split(/\s+/));
 
-                            let tmp_total = 0
-                            for (let line of lines) {
-                                // find number
-                                let number = line.find(word => !isNaN(word))
-                                let isMyPoint = line.find(word => word == "@" + user.username)
-                                if (number) {
-                                    tmp_total += parseFloat(number)
-                                }
-                                if (isMyPoint) {
-                                    console.log("found my point",number)
-                                    point = parseFloat(number)
+                                    let tmp_total = 0;
+                                    for (let line of lines) {
+                                        // find number
+                                        let number = line.find(word => !isNaN(word));
+                                        let isMyPoint = line.find(word => word == "@" + user.username);
+                                        if (number) {
+                                            tmp_total += parseFloat(number);
+                                        }
+                                        if (isMyPoint) {
+                                            console.log("found my point", number);
+                                            point = parseFloat(number);
+                                        }
+                                    }
+                                    if (tmp_total != data.total_points) {
+                                        toast.error(`Total point is not equal to the sum of points in description, ${tmp_total} != ${data.total_points}`);
+                                    }
                                 }
 
+                                if (point == 0) {
+                                    point = data.total_points / data.assigned_users.length;
+                                }
+                                total_point += point;
+                                if (data.status_extra_info.name == "Done") {
+                                    done_point += point;
+                                }
+                                userStories.push({
+                                    id: data.id,
+                                    mypoint: point,
+                                    name: data.subject,
+                                    status: data.status_extra_info.name,
+                                });
                             }
-                            if (tmp_total != data.total_points) {
-                                toast.error("Total point is not equal to the sum of points in description, " + tmp_total + " != " + data.total_points + "")
-                            }
-                        }
-                        
-                        if (point == 0){
-                            point = data.total_points / data.assigned_users.length
-                        }
-                            total_point += point
-                        if (data.status_extra_info.name == "Done") {
-                            done_point += point
-                        }
-                        userStories.push({
-                            id: data.id,
-                            mypoint: point,
-                            name: data.subject,
-                            status: data.status_extra_info.name,
                         })
-                    }
+                        .catch(error => {
+                            console.error('Error fetching user story:', error);
+                        });
+
+                    fetchPromises.push(fetchPromise);
                 }
-                userStoryByMilestone.push({
-                    name: milestone.name,
-                    userstories: userStories
+
+                // Wait for all fetch requests to complete
+                const milestone_promise = Promise.all(fetchPromises).then(() => {
+                    userStoryByMilestone.push({
+                        name: milestone.name,
+                        userstories: userStories
+                    })
                 })
+                milestone_promises.push(milestone_promise)
             }
-            milestones_byproject.push({
-                name: project.name,
-                milestones: userStoryByMilestone
+            const project_promise = Promise.all(milestone_promises).then(() => {
+                milestones_byproject.push({
+                    name: project.name,
+                    milestones: userStoryByMilestone
+                })
             })
+
+            project_promises.push(project_promise)
+
         }
+        await Promise.all(project_promises)
         setContributions(milestones_byproject)
         setCurrentPoint(done_point.toFixed(2))
         setTotalPoint(total_point.toFixed(2))
@@ -173,7 +194,14 @@ export default function Dashboard() {
                 </div>
             </div>
         </div>
-        <UserInput user={user} calculatePoint={calculatePoint} isCalculating={isCalculating} />
+        <UserInput user={user} calculatePoint={
+            async (project, month) => {
+                const start_time = performance.now()
+                await calculatePoint(project, month)
+                const end_time = performance.now()
+                console.log("Time taken: ", end_time - start_time)
+            }
+        } isCalculating={isCalculating} />
         <ContributionsSummary contributions={contributions} total_point={totalPoint} />
     </main>
 }
