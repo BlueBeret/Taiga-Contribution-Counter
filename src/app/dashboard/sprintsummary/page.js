@@ -49,42 +49,49 @@ export default function Dashboard() {
             method: "GET"
         }).then(resp => resp.json())
 
+        let user_story_promises = []
         for (let userstory of userstories) {
             global_total_point += userstory.total_points
-            let user_story = await fetch(hostname + `/api/v1/userstories/${userstory.id}`, {
+            let us_promise = fetch(hostname + `/api/v1/userstories/${userstory.id}`, {
                 headers: {
                     Authorization: `Bearer ${user.auth_token}`
                 },
                 method: "GET"
-            }).then(resp => resp.json())
-
-            for (let user of user_story.assigned_users) {
-                if (!users.find(u => u.id == user)) {
-                    let tmp = {}
-                    tmp.id = user
-                    tmp.user_story = []
-                    tmp.total_point = 0
-                    console.log(user_story)
-                    tmp.user_story.push({
-                        id: user_story.id,
-                        name: user_story.subject,
-                        point: user_story.total_points / user_story.assigned_users.length,
-                        link: hostname + `/project/${user_story.project_extra_info.slug}/us/${user_story.ref}`
-                    })
-                    tmp.total_point += user_story.total_points / user_story.assigned_users.length
-                    users.push(tmp)
-                } else {
-                    let tmp = users.find(u => u.id == user)
-                    tmp.user_story.push({
-                        id: user_story.id,
-                        name: user_story.subject,
-                        point: user_story.total_points / user_story.assigned_users.length,
-                        link: hostname + `/projects/${projects[0].id}/milestones/${lastmilestone.id}/userstories/${user_story.id}`
-                    })
-                    tmp.total_point += user_story.total_points / user_story.assigned_users.length
+            }).then(resp => resp.json()).then((
+                user_story => {
+                    for (let user of user_story.assigned_users) {
+                        if (!users.find(u => u.id == user)) {
+                            let tmp = {}
+                            tmp.id = user
+                            tmp.user_story = []
+                            tmp.total_point = 0
+                            console.log(user_story)
+                            tmp.user_story.push({
+                                id: user_story.id,
+                                name: user_story.subject,
+                                point: user_story.total_points / user_story.assigned_users.length,
+                                link: hostname + `/project/${user_story.project_extra_info.slug}/us/${user_story.ref}`
+                            })
+                            tmp.total_point += user_story.total_points / user_story.assigned_users.length
+                            users.push(tmp)
+                        } else {
+                            let tmp = users.find(u => u.id == user)
+                            tmp.user_story.push({
+                                id: user_story.id,
+                                name: user_story.subject,
+                                point: user_story.total_points / user_story.assigned_users.length,
+                                link: hostname + `/projects/${projects[0].id}/milestones/${lastmilestone.id}/userstories/${user_story.id}`
+                            })
+                            tmp.total_point += user_story.total_points / user_story.assigned_users.length
+                        }
+                    }
                 }
-            }
+            ))
+
+            user_story_promises.push(us_promise)
         }
+
+        await Promise.all(user_story_promises)
 
         let users_data = await fetch(hostname + `/api/v1/users`, {
             headers: {
