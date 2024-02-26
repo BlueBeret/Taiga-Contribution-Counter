@@ -23,6 +23,7 @@ export default function Dashboard() {
         host = host.origin
         let time = new Date()
         try {
+            // fetch user
             let users = await fetch(host + "/api/v1/users", {
                 headers: {
                     Authorization: `Bearer ${user.auth_token}`
@@ -41,43 +42,54 @@ export default function Dashboard() {
                 }
             })
 
+            let project_promises = []
+
             for (let project of projects) {
-                let milestonethismonth = await fetch(host + `/api/v1/milestones?project=${project.id}`, {
+                let project_promise = await fetch(host + `/api/v1/milestones?project=${project.id}`, {
                     headers: {
                         Authorization: `Bearer ${user.auth_token}`
                     },
                     method: "GET"
-                }).then(resp => resp.json())
-                milestonethismonth = milestonethismonth.filter(milestone => milestone.estimated_finish && milestone.estimated_finish.includes(month))
+                }).then(resp => resp.json()).then(async (allmilestone) => {
+                    let milestonethismonth = allmilestone.filter(milestone => milestone.estimated_finish && milestone.estimated_finish.includes(month))
 
-                for (let milestone of milestonethismonth) {
-                    for (let userstory of milestone.user_stories) {
-                        let user_story = await fetch(host + `/api/v1/userstories/${userstory.id}`, {
-                            headers: {
-                                Authorization: `Bearer ${user.auth_token}`
-                            },
-                            method: "GET"
-                        }).then(resp => resp.json())
-
-                        for (let user of users) {
-                            if (user_story.assigned_users.includes(user.id)) {
-                                user.task += 1
-                                if (user_story.status_extra_info.name == "Done") {
-                                    user.doneTask += 1
-                                    user.point += user_story.total_points / user_story.assigned_users.length
+                    let milestone_promises = []
+                    for (let milestone of milestonethismonth) {
+                        for (let userstory of milestone.user_stories) {
+                            let user_story_promise = fetch(host + `/api/v1/userstories/${userstory.id}`, {
+                                headers: {
+                                    Authorization: `Bearer ${user.auth_token}`
+                                },
+                                method: "GET"
+                            }).then(resp => resp.json()).then(user_story => {
+                                for (let user of users) {
+                                    if (user_story.assigned_users.includes(user.id)) {
+                                        user.task += 1
+                                        if (user_story.status_extra_info.name == "Done") {
+                                            user.doneTask += 1
+                                            user.point += user_story.total_points / user_story.assigned_users.length
+                                        }
+                                    }
                                 }
-                            }
-                        }
-                        let current_time = new Date()
-                        if (current_time - time > 2000) {
-                            time = current_time
-                            toast.loading(LOADINGMESSAGE[Math.floor(Math.random() * LOADINGMESSAGE.length)], {
-                                id: loadingToast
+                                let current_time = new Date()
+                                if (current_time - time > 2000) {
+                                    time = current_time
+                                    toast.loading(LOADINGMESSAGE[Math.floor(Math.random() * LOADINGMESSAGE.length)], {
+                                        id: loadingToast
+                                    })
+                                }
+
                             })
+
+                            milestone_promises.push(user_story_promise)
                         }
                     }
-                }
+                    await Promise.all(milestone_promises)
+                })
+                project_promises.push(project_promise)
             }
+
+            await Promise.all(project_promises)
             toast.success("Done calculating", {
                 id: loadingToast
             })
@@ -213,6 +225,12 @@ const UserInput = ({ user, calculatePoint }) => {
                 })}
             </div>
         </div>
-        <button className="bg-pink-0 text-purple-100 py-2 px-4 rounded-md" onClick={(e) => calculatePoint(projects, month)}>Calculate</button>
+        <button className="bg-pink-0 text-purple-100 py-2 px-4 rounded-md" onClick={async (e) => {
+            let start = performance.now()
+            await calculatePoint(projects, month)
+            let end = performance.now()
+            console.log("Time to calculate", (end - start) / 1000, " s")
+        }
+        }>Calculate</button>
     </div>
 }
