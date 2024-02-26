@@ -10,6 +10,7 @@ export default function Dashboard() {
     const [totalPoint, setTotalPoint] = useState(0)
     const [currentRank, setCurrentRank] = useState(0)
     const [contributions, setContributions] = useState([])
+    const [isCalculating, setIsCalculating] = useState(false)
 
     const calculatePoint = async (projects, month) => {
         // month is year-mm
@@ -21,6 +22,8 @@ export default function Dashboard() {
             toast.error("Please select a month")
             return 0
         }
+
+        setIsCalculating(true)
 
         let loadingToast = toast.loading("Calculating your handsomeness")
 
@@ -125,6 +128,7 @@ export default function Dashboard() {
         toast.success("Dammn, you're so handsome", {
             id: loadingToast
         })
+        setIsCalculating(false)
     }
 
     useEffect(() => {
@@ -169,7 +173,7 @@ export default function Dashboard() {
                 </div>
             </div>
         </div>
-        <UserInput user={user} calculatePoint={calculatePoint} />
+        <UserInput user={user} calculatePoint={calculatePoint} isCalculating={isCalculating} />
         <ContributionsSummary contributions={contributions} total_point={totalPoint} />
     </main>
 }
@@ -224,7 +228,7 @@ const ContributionsSummary = ({ contributions, setCurrentPoint, currentPoint, to
     </div>
 }
 
-const UserInput = ({ user, calculatePoint }) => {
+const UserInput = ({ user, calculatePoint, isCalculating }) => {
     const [availableProjects, setAvailableProjects] = useState([
         {
             name: "Project 1",
@@ -308,7 +312,7 @@ const UserInput = ({ user, calculatePoint }) => {
                 })}
             </div>
 
-            <button className="bg-pink-0 text-purple-100 py-2 px-4 rounded-md" onClick={(e) => calculatePoint(projects, month)}>Calculate</button>
+            <button className="bg-pink-0 text-purple-100 py-2 px-4 rounded-md" disabled={isCalculating} onClick={(e) => calculatePoint(projects, month)}>Calculate</button>
         </div>
     </div>
 }
