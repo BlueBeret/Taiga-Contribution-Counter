@@ -1,5 +1,5 @@
 # Taiga Contributions Counter
-Taiga Contributions Counter is a simple web app that counts the number of contributions (points) you have made to a Taiga project.
+Taiga Contributions Counter is a simple web app that counts the number of contributions (points) you have made to a [https://taiga.io/](Taiga) (The free and open-source project management tool).
 
 ## Getting Started
 You can try the app at [https://taiga.lurifos.dev](https://taiga.lurifos.dev) or you can run it locally.
@@ -13,7 +13,7 @@ You can try the app at [https://taiga.lurifos.dev](https://taiga.lurifos.dev) or
 ```sh
 git clone https://github.com/BlueBeret
 ```
-2. Install NPM packages
+2. Install dep packages
 ```sh
 npm install
 ```
