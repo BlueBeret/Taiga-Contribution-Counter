@@ -5,6 +5,7 @@ import { headers } from 'next/headers';
 import Header from './Header';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import GoogleAnalytics from '../GoogleAnalytics';
 
 export const metadata = {
     title: 'Taiga Point Counter',
@@ -34,7 +35,8 @@ export default function RootLayout({ children }) {
             position='top-center'
         ></Toaster>
         <Analytics />
-        <SpeedInsights/>
+        <SpeedInsights />
+        {process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID && <GoogleAnalytics ga_id={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID} />}
     </div>
     )
 }
