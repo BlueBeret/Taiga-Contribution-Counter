@@ -250,7 +250,14 @@ const UserInput = ({ user, calculatePoint, detail, setDetail }) => {
         }
     ])
     const [isSelectingProject, setIsSelectingProject] = useState(false)
-    const [projects, setProjects] = useState([])
+
+    // get localstorage if available
+    const projectsFromLocalStorage = JSON.parse(localStorage.getItem("projects-lss") || "[]")
+    const [projects, setProjects] = useState(projectsFromLocalStorage)
+
+    useEffect(() => {
+        localStorage.setItem("projects-lss", JSON.stringify(projects))
+    }, [projects])
 
     useEffect(() => {
         const target = document.querySelector('#project-select')

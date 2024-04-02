@@ -272,8 +272,12 @@ const UserInput = ({ user, calculatePoint, isCalculating }) => {
         }
     ])
     const [isSelectingProject, setIsSelectingProject] = useState(false)
-    const [projects, setProjects] = useState([])
-    const [month, setMonth] = useState("")
+    // get projects from localstorage if available
+    const projectsFromLocalStorage = JSON.parse(localStorage.getItem("projects")) || []
+    const [projects, setProjects] = useState(projectsFromLocalStorage)
+
+    const currentMonth = new Date().toISOString().split("T")[0].slice(0, 7)
+    const [month, setMonth] = useState(currentMonth)
 
     useEffect(() => {
         const target = document.querySelector('#project-select')
@@ -288,6 +292,10 @@ const UserInput = ({ user, calculatePoint, isCalculating }) => {
             }
         })
     }, [])
+
+    useEffect(() => {
+        localStorage.setItem("projects", JSON.stringify(projects))
+    }, [projects])
 
     // get project list
     useEffect(() => {
