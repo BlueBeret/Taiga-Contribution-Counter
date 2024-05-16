@@ -25,13 +25,19 @@ export default function Dashboard() {
 
         setIsCalculating(true)
 
-        let loadingToast = toast.loading("Calculating your handsomeness")
+        let loadingToast = toast.loading("Calculating your cuteness")
 
         let milestones_byproject = []
         let done_point = 0
         let total_point = 0
 
         let project_promises = []
+        let total_fetch = 0
+        let done_fetch = 0
+        let total_milestone = 0
+        let done_milestone = 0
+        let total_project = projects.length
+        let done_project = 0
         for (let project of projects) {
             let milestonethismonth = []
             let host = new URL(user.photo)
@@ -57,9 +63,13 @@ export default function Dashboard() {
             let userStoryByMilestone = []
 
             let milestone_promises = []
+            total_milestone = milestonethismonth.length
+            done_milestone = 0
             for (let milestone of milestonethismonth) {
                 let userStories = [];
                 let fetchPromises = [];
+                total_fetch = milestone.user_stories.length
+                done_fetch = 0
 
                 for (let userStory of milestone.user_stories) {
                     let fetchPromise = fetch(host + `/api/v1/userstories/${userStory.id}`, {
@@ -118,13 +128,23 @@ export default function Dashboard() {
                         })
                         .catch(error => {
                             console.error('Error fetching user story:', error);
-                        });
+                        }).finally(
+                            () => {
+                                done_fetch += 1
+                                let percentage = 0 + (done_project / total_project) * 100 + (done_milestone / total_milestone / total_project) * 100 + (done_fetch / total_fetch / total_milestone / total_project) * 100
+                                percentage = percentage.toFixed(1)
+                                toast.loading(`You're made of  ${percentage}% cute material.`, {
+                                    id: loadingToast
+                                })
+                            }
+                        );
 
                     fetchPromises.push(fetchPromise);
                 }
 
                 // Wait for all fetch requests to complete
                 const milestone_promise = Promise.all(fetchPromises).then(() => {
+                    done_milestone += 1
                     userStoryByMilestone.push({
                         name: milestone.name,
                         userstories: userStories
@@ -133,6 +153,7 @@ export default function Dashboard() {
                 milestone_promises.push(milestone_promise)
             }
             const project_promise = Promise.all(milestone_promises).then(() => {
+                done_project += 1
                 milestones_byproject.push({
                     name: project.name,
                     milestones: userStoryByMilestone
@@ -146,7 +167,7 @@ export default function Dashboard() {
         setContributions(milestones_byproject)
         setCurrentPoint(done_point.toFixed(2))
         setTotalPoint(total_point.toFixed(2))
-        toast.success("Dammn, you're so handsome", {
+        toast.success("Dammn, you're so cute <3", {
             id: loadingToast
         })
         setIsCalculating(false)
