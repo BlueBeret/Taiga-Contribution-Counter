@@ -32,11 +32,7 @@ export default function Dashboard() {
         let total_point = 0
 
         let project_promises = []
-        let total_fetch = 0
-        let done_fetch = 0
-        let total_milestone = 0
-        let done_milestone = 0
-        let total_project = projects.length
+        const total_project = projects.length
         let done_project = 0
         for (let project of projects) {
             let milestonethismonth = []
@@ -63,14 +59,11 @@ export default function Dashboard() {
             let userStoryByMilestone = []
 
             let milestone_promises = []
-            total_milestone = milestonethismonth.length
-            done_milestone = 0
+            const total_milestone = milestonethismonth.length
+            let done_milestone = 0
             for (let milestone of milestonethismonth) {
                 let userStories = [];
                 let fetchPromises = [];
-                total_fetch = milestone.user_stories.length
-                done_fetch = 0
-
                 for (let userStory of milestone.user_stories) {
                     let fetchPromise = fetch(host + `/api/v1/userstories/${userStory.id}`, {
                         headers: {
@@ -130,8 +123,7 @@ export default function Dashboard() {
                             console.error('Error fetching user story:', error);
                         }).finally(
                             () => {
-                                done_fetch += 1
-                                let percentage = 0 + (done_project / total_project) * 100 + (done_milestone / total_milestone / total_project) * 100 + (done_fetch / total_fetch / total_milestone / total_project) * 100
+                                let percentage = 0 + (done_project / total_project) * 100 + (done_milestone / total_milestone / total_project) * 100 // (done_fetch / total_fetch / total_milestone / total_project) * 100
                                 percentage = percentage.toFixed(1)
                                 toast.loading(`You're made of  ${percentage}% cute material.`, {
                                     id: loadingToast
