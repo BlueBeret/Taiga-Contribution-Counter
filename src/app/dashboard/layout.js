@@ -3,6 +3,7 @@ import { Metal_Mania, Poppins } from 'next/font/google'
 import { Toaster } from "react-hot-toast";
 import { headers } from 'next/headers';
 import Header from './Header';
+import Footer from './Footer';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import GoogleAnalytics from '../GoogleAnalytics';
@@ -31,6 +32,7 @@ export default function RootLayout({ children }) {
         >
             {children}
         </div>
+        <Footer></Footer>
         <Toaster
             position='top-center'
         ></Toaster>
