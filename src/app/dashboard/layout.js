@@ -25,7 +25,7 @@ export default function RootLayout({ children }) {
     return (<div className='flex flex-col w-full h-full'>
         {/* <Script src="https://cdn.counter.dev/script.js" data-id="a441cb5b-1922-4da1-aaa8-0b1b471180cf" data-utcoffset="7"></Script> */}
         <Header path={fullUrl}></Header>
-        <div className='w-screen'
+        <div className='w-screen overflow-auto'
             style={{
                 height: "calc(100vh - 68px)"
             }}
