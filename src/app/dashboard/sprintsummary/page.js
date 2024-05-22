@@ -11,6 +11,38 @@ export default function Dashboard() {
     const [contributions, setContributions] = useState([])
     const [detail, setDetail] = useState(false)
 
+    const getUsers = async () => {
+        let users_data = await fetch(hostname + `/api/v1/users`, {
+            headers: {
+                Authorization: `Bearer ${user.auth_token}`
+            },
+            method: "GET"
+        }).then(resp => resp.json())
+
+        // get page 2
+        let page = 2
+        let users_data2 = []
+        while (true) {
+            try {
+                users_data2 = await fetch(hostname + `/api/v1/users?page=${page}`, {
+                    headers: {
+                        Authorization: `Bearer ${user.auth_token}`
+                    },
+                    method: "GET"
+                }).then(resp => resp.json())
+                if (users_data2.length == 0) break
+                users_data = [...users_data, ...users_data2]
+                page++
+            }
+            catch (e) {
+                break
+            }
+
+        }
+
+        return users_data
+    }
+
     const summarizeSprint = async (projects) => {
         // month is year-mm
         if (projects.length != 1) {
@@ -91,35 +123,16 @@ export default function Dashboard() {
             user_story_promises.push(us_promise)
         }
 
+        let users_data
+
+        const users_data_promise = getUsers().then(data => {
+            users_data = data
+        })
+
+        // push in first index
+        user_story_promises.push(users_data_promise)
+
         await Promise.all(user_story_promises)
-
-        let users_data = await fetch(hostname + `/api/v1/users`, {
-            headers: {
-                Authorization: `Bearer ${user.auth_token}`
-            },
-            method: "GET"
-        }).then(resp => resp.json())
-
-        // get page 2
-        let page = 2
-        let users_data2 = []
-        while (true) {
-            try {
-                users_data2 = await fetch(hostname + `/api/v1/users?page=${page}`, {
-                    headers: {
-                        Authorization: `Bearer ${user.auth_token}`
-                    },
-                    method: "GET"
-                }).then(resp => resp.json())
-                if (users_data2.length == 0) break
-                users_data = [...users_data, ...users_data2]
-                page++
-            }
-            catch (e) {
-                break
-            }
-
-        }
 
         for (let user of users) {
             let user_data = users_data.find(u => u.id == user.id)

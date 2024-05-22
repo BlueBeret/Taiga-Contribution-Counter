@@ -177,7 +177,7 @@ const Header = (params) => {
             </div>
         })}
         <button className="text-white ml-auto" onClick={(e) => { localStorage.clear(); document.location = "/login" }}>{LogoutIcon}</button>
-        <img id="duck" className=" fixed w-6 h-6 bg-transparent"
+        <img id="duck" className=" fixed w-6 h-6 bg-transparent cursor-pointer"
             src="/Walking.gif"
             onClick={(e) => {
                 toast.success("Quack!")

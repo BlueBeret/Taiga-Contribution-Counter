@@ -13,7 +13,7 @@ function Login(params) {
         if (user) {
             user = JSON.parse(user)
             // redirect to dashboard
-            document.location = "/dashboard"
+            document.location = "/dashboard/user"
         }
     }, [])
 
@@ -77,7 +77,7 @@ function Login(params) {
                     id: toastLoading
                 })
                 // redirect to dashboard
-                document.location = "/dashboard"
+                document.location = "/dashboard/user"
 
             }
             // handler error for data processing error
