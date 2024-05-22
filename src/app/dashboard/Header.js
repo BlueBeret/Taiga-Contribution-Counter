@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
+import Link from "next/link";
 
 const getDuck = () => {
     let duck = localStorage.getItem("duck")
@@ -171,10 +172,10 @@ const Header = (params) => {
         <span className='w-40 font-bold text-2xl'>Taiga</span>
         {menus.map(menu => {
             let textColor = path.includes(menu.target) ? "text-pink-0" : "text-pink-100"
-            return <div key={menu.name} onClick={(e) => document.location = menu.target} className={`${textColor} flex gap-2 items-center text-[18px] cursor-pointer hover:text-pink-0`}>
+            return <Link key={menu.name} href={menu.target} className={`${textColor} no-underline flex gap-2 items-center text-[18px] cursor-pointer hover:text-pink-0`}>
                 <span>{menu.icon}</span>
                 <span className="font-bold hidden sm:block">{menu.name}</span>
-            </div>
+            </Link>
         })}
         <button className="text-white ml-auto" onClick={(e) => { localStorage.clear(); document.location = "/login" }}>{LogoutIcon}</button>
         <img id="duck" className=" fixed w-6 h-6 bg-transparent cursor-pointer"

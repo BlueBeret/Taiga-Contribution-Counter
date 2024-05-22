@@ -12,6 +12,8 @@ export default function Dashboard() {
     const [detail, setDetail] = useState(false)
 
     const getUsers = async () => {
+        let hostname = new URL(user.photo)
+        hostname = hostname.origin
         let users_data = await fetch(hostname + `/api/v1/users`, {
             headers: {
                 Authorization: `Bearer ${user.auth_token}`
@@ -130,7 +132,7 @@ export default function Dashboard() {
         })
 
         // push in first index
-        user_story_promises.push(users_data_promise)
+        user_story_promises.unshift(users_data_promise)
 
         await Promise.all(user_story_promises)
 
