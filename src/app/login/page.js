@@ -110,13 +110,13 @@ function Login(params) {
                         {HostIcon}
                         <input name="hostname" className="bg-transparent w-full" placeholder="Hostname" title="example: http://10.10.10.1:9000" type="text" value={hostname} onChange={e => setHostname(e.target.value)}></input>
                     </div>}
-                    <div name="username" className="flex items-center gap-1 border border-purple-0 bg-purple-50 px-2 py-[10px] rounded-[4px]">
+                    <div name="username" className="flex items-center gap-1 border border-purple-0 bg-purple-50 px-2 py-[10px] rounded-[4px] focus-within:outline focus-within:outline-2 focus-within:outline-pink-0">
                         {UserIcon}
-                        <input className="bg-transparent w-full" placeholder="Username" type="text" value={username} onChange={e => setUsername(e.target.value)}></input>
+                        <input className="bg-transparent w-full focus:outline-none" placeholder="Username" type="text" value={username} onChange={e => setUsername(e.target.value)}></input>
                     </div>
-                    <div name="password" className="flex items-center gap-1 border border-purple-0 bg-purple-50 px-2 py-[10px] rounded-[4px]">
+                    <div name="password" className="flex items-center gap-1 border border-purple-0 bg-purple-50 px-2 py-[10px] rounded-[4px] focus-within:outline focus-within:outline-2 focus-within:outline-pink-0">
                         {PasswordIcon}
-                        <input className="bg-transparent w-full" placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)}></input>
+                        <input className="bg-transparent w-full focus:outline-none" placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)}></input>
                     </div>
                     <input type="submit" hidden />
                 </form>
